@@ -38,13 +38,144 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         for new_name in renamer.renamed_vars.values() {
             assert!(is_valid_rust_var_name(new_name), "Invalid variable name: {}", new_name);
         }
-        println!("{}", modified_code);
+
         //original names should not be found in modified code (except for sum TO DO: remove when string encryption is implemented)
         let original_names = vec!["calculate_sum", "result", "num1", "num2"];
         for name in original_names {
             assert!(
                 !modified_code.contains(name),
                 "Original name '{}' still found in modified code", 
+                name
+            );
+        }
+
+    }
+#[test]
+    fn test_nested_function_calls() {
+        let code = r#"
+            fn add_one(x: i32) -> i32 {
+                x + 1
+            }
+
+            fn calculate_sum(a: i32, b: i32) -> i32 {
+                let result = a + b;
+                result
+            }
+
+            fn main() {
+                let mut num1 = 10;
+                let num2 = 20;
+                num1 = 30;
+                let sum = calculate_sum(add_one(num1), num2);
+                println!("The sum is: {}", sum);
+            }
+        "#;
+
+        let ast = syn::parse_file(code).expect("Failed to parse code");
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut modified_ast = ast.clone();
+        renamer.visit_file_mut(&mut modified_ast);
+        
+        let modified_code = quote!(#modified_ast).to_string();
+
+        let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
+        for name in original_names {
+            assert!(
+                !modified_code.contains(name),
+                "Original function name '{}' still found in modified code", 
+                name
+            );
+        }
+
+    }
+
+    #[test]
+    fn test_nested_macros() {
+        let code = r#"
+        fn main() {
+            let num1 = 10;
+            let num2 = 20;
+            println!("Formatted: {}", format!("Num1: {}, Num2: {}", num1, num2));
+        }
+    "#;
+
+        let ast = syn::parse_file(code).expect("Failed to parse code");
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut modified_ast = ast.clone();
+        renamer.visit_file_mut(&mut modified_ast);
+        
+        let modified_code = quote!(#modified_ast).to_string();
+
+        println!("hi {}", modified_code);
+        let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
+        for name in original_names {
+            assert!(
+                !modified_code.contains(name),
+                "Original function name '{}' still found in modified code", 
+                name
+            );
+        }
+
+    }
+    #[test]
+    fn test_user_defined_nested_macro() {
+        let code = r#"
+            macro_rules! identity {
+                ($x:expr) => ($x)
+            }
+
+            fn main() {
+                let num1 = 10;
+                let num2 = 20;
+                println!("Num1: {}", identity!(num1));
+                println!("Num2: {}", identity!(num2));
+            }
+        "#;
+
+        let ast = syn::parse_file(code).expect("Failed to parse code");
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut modified_ast = ast.clone();
+        renamer.visit_file_mut(&mut modified_ast);
+        
+        let modified_code = quote!(#modified_ast).to_string();
+
+        println!("hi {}", modified_code);
+        let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
+        for name in original_names {
+            assert!(
+                !modified_code.contains(name),
+                "Original function name '{}' still found in modified code", 
+                name
+            );
+        }
+
+    }
+    #[test]
+    fn test_function_in_macro() {
+        let code = r#"
+            fn add_one(x: i32) -> i32 {
+                x + 1
+            }
+
+            fn main() {
+                let num = 10;
+                println!("Num + 1: {}", add_one(num));
+            }
+        "#;
+
+        let ast = syn::parse_file(code).expect("Failed to parse code");
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut modified_ast = ast.clone();
+        renamer.visit_file_mut(&mut modified_ast);
+        
+        let modified_code = quote!(#modified_ast).to_string();
+
+        println!("hi {}", modified_code);
+        let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
+        for name in original_names {
+            assert!(
+                !modified_code.contains(name),
+                "Original function name '{}' still found in modified code", 
                 name
             );
         }

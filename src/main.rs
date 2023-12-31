@@ -8,7 +8,7 @@ use rand::{Rng};
 use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro};
 use quote::quote;
 use std::collections::HashMap;
-use proc_macro2::TokenTree;
+use proc_macro2::{TokenStream, TokenTree, Group};
 
 // Function to generate a random name
 fn random_name() -> String {
@@ -55,6 +55,28 @@ impl VariableRenamer {
             renamed_vars: HashMap::new(),
         }
     }
+    //helper to process Macros tokenstream and check if it is an identifier or another macro or func call
+    fn process_tokens(&mut self, tokens: TokenStream) -> TokenStream {
+        tokens.into_iter().map(|token| {
+            match token {
+                TokenTree::Group(group) => {
+
+                    let modified_tokens = self.process_tokens(group.stream());
+                    TokenTree::Group(Group::new(group.delimiter(), modified_tokens))
+                },
+                TokenTree::Ident(ident) => {
+
+                    if let Some(new_name) = self.renamed_vars.get(&ident.to_string()) {
+                        TokenTree::Ident(Ident::new(new_name, ident.span()))
+                    } else {
+                        TokenTree::Ident(ident)
+                    }
+                },
+                _ => token
+            }
+        }).collect()
+    }
+    
 }
 
 impl VisitMut for VariableRenamer {
@@ -87,18 +109,7 @@ impl VisitMut for VariableRenamer {
     }
 
     fn visit_macro_mut(&mut self, i: &mut Macro) {
- 
-        i.tokens = i.tokens.clone().into_iter().map(|token| {
-
-        if let TokenTree::Ident(ref ident) = token {
-            let ident_str = ident.to_string();
-            // Check if macro params are in changed variables
-            if let Some(new_name) = self.renamed_vars.get(&ident_str) {
-                return TokenTree::Ident(Ident::new(new_name, ident.span()));
-            }
-        }
-        token
-        }).collect();
+        i.tokens = self.process_tokens(i.tokens.clone());
     }
 
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
@@ -170,17 +181,10 @@ impl VisitMut for VariableRenamer {
 
 fn main() {
     let code = r#"
-        fn calculate_sum(a: i32, b: i32) -> i32 {
-            let result = a + b;
-            result
-        }
-
         fn main() {
-            let mut num1 = 10;
+            let num1 = 10;
             let num2 = 20;
-            num1 = 30;
-            let sum = calculate_sum(num1, num2);
-            println!("The sum is: {}", sum);
+            println!("Formatted: {}", format!("Num1: {}, Num2: {}", num1, num2));
         }
     "#;
 
