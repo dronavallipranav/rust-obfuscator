@@ -1,10 +1,12 @@
 extern crate rand;
 extern crate syn;
 
+#[cfg(test)]
+mod rename_tests;
+
 use rand::{Rng};
 use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro};
 use quote::quote;
-use proc_macro2::TokenStream;
 use std::collections::HashMap;
 use proc_macro2::TokenTree;
 
@@ -12,17 +14,25 @@ use proc_macro2::TokenTree;
 fn random_name() -> String {
     let mut rng = rand::thread_rng();
     let name_length = rng.gen_range(3..=10);
-    
-    let mut name = (0..name_length)
-        .map(|_| {
-            if rng.gen_bool(0.8) { 
-                rng.gen_range(b'a'..=b'z') as char
-            } else { 
-                '_'
-            }
-        })
-        .collect::<String>();
-    //make sure name doesn't end or start in underscore
+
+    let mut last_char_was_underscore = false;
+    let mut name = String::new();
+
+    while name.len() < name_length {
+        let next_char = if rng.gen_bool(0.8) { 
+            rng.gen_range(b'a'..=b'z') as char
+        } else { 
+            '_'
+        };
+
+        // Ensure not two underscores in a row
+        if !(last_char_was_underscore && next_char == '_') {
+            name.push(next_char);
+            last_char_was_underscore = next_char == '_';
+        }
+    }
+
+    // Ensure the name does not start or end with an underscore
     if name.starts_with('_') {
         name.remove(0);
         name.insert(0, rng.gen_range(b'a'..=b'z') as char);
@@ -50,10 +60,19 @@ impl VariableRenamer {
 impl VisitMut for VariableRenamer {
 
     fn visit_item_fn_mut(&mut self, i: &mut ItemFn) {
+        //rename function names unless it's main
+        let old_name = i.sig.ident.to_string();
+        if old_name != "main"{
+            if !self.renamed_vars.contains_key(&old_name) {
+                let new_name = random_name();
+                self.renamed_vars.insert(old_name.clone(), new_name.clone());
+                i.sig.ident = Ident::new(&new_name, i.sig.ident.span());
+            }
+        }
+
         let len = i.block.stmts.len();
         for (index, stmt) in i.block.stmts.iter_mut().enumerate() {
             match stmt {
-            
                 syn::Stmt::Local(local) => self.visit_local_mut(local),
                 
                 //check if last statement is an expression
@@ -69,7 +88,7 @@ impl VisitMut for VariableRenamer {
 
     fn visit_macro_mut(&mut self, i: &mut Macro) {
  
-     i.tokens = i.tokens.clone().into_iter().map(|token| {
+        i.tokens = i.tokens.clone().into_iter().map(|token| {
 
         if let TokenTree::Ident(ref ident) = token {
             let ident_str = ident.to_string();
@@ -79,7 +98,7 @@ impl VisitMut for VariableRenamer {
             }
         }
         token
-    }).collect();
+        }).collect();
     }
 
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
@@ -109,7 +128,17 @@ impl VisitMut for VariableRenamer {
             },
             //handle function call
             Expr::Call(expr_call) => {
-    
+                
+                //rename function names
+                if let Expr::Path(expr_path) = &mut *expr_call.func {
+                    if let Some(last_segment) = expr_path.path.segments.last_mut() {
+                        let func_name = last_segment.ident.to_string();
+                        if let Some(new_name) = self.renamed_vars.get(&func_name) {
+                            last_segment.ident = Ident::new(new_name, last_segment.ident.span());
+                        }
+                    }
+                }
+                //rename all function arguments
                 for arg in &mut expr_call.args {
                     self.visit_expr_mut(arg);
                 }
@@ -161,7 +190,7 @@ fn main() {
     let mut visitor = VariableRenamer::new();
     let mut modified_ast = ast.clone();
     visitor.visit_file_mut(&mut modified_ast);
-    let new_code: TokenStream = quote! { #modified_ast };
+    let modified_code = quote!(#modified_ast).to_string();
 
-    println!("{}", new_code);
+    println!("{}", modified_code);
 }
