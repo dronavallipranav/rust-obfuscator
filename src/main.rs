@@ -5,7 +5,7 @@ extern crate syn;
 mod rename_tests;
 
 use rand::{Rng};
-use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro, Visibility, UseTree, UsePath, UseName, UseRename, ItemUse};
+use syn::{visit_mut::VisitMut, parse_file, Ident, ItemFn, Local, Expr, ExprPath, Macro, Visibility, UseTree, UsePath, UseName, UseRename, ItemUse};
 use quote::quote;
 use std::collections::{HashMap, HashSet};
 use proc_macro2::{TokenStream, TokenTree, Group};
@@ -94,7 +94,13 @@ impl VariableRenamer {
             _ => {}
         }
     }
-
+    fn rename(&mut self, code: &str) -> String {
+        let ast = parse_file(code).expect("Failed to parse code");
+        let mut modified_ast = ast.clone();
+        self.visit_file_mut(&mut modified_ast);
+        let modified_code = quote!(#modified_ast).to_string();
+        modified_code
+    }
 }
 
 //check to see if the function is local, only rename local functions for now

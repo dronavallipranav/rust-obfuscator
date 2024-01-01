@@ -25,12 +25,9 @@ fn is_valid_rust_var_name(name: &str) -> bool {
             }
         "#;
 
-        let ast = syn::parse_file(code).expect("Failed to parse code");
         let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
-        let mut modified_ast = ast.clone();
-        renamer.visit_file_mut(&mut modified_ast);
-        
-        let modified_code = quote!(#modified_ast).to_string();
+        let modified_code = renamer.rename(code);
+
         //compare the modified code with the original
         assert_ne!(modified_code, code);
 
@@ -71,12 +68,8 @@ fn is_valid_rust_var_name(name: &str) -> bool {
             }
         "#;
 
-        let ast = syn::parse_file(code).expect("Failed to parse code");
         let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
-        let mut modified_ast = ast.clone();
-        renamer.visit_file_mut(&mut modified_ast);
-        
-        let modified_code = quote!(#modified_ast).to_string();
+        let modified_code = renamer.rename(code);
 
         let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
         for name in original_names {
@@ -99,12 +92,9 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         }
     "#;
 
-        let ast = syn::parse_file(code).expect("Failed to parse code");
         let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
-        let mut modified_ast = ast.clone();
-        renamer.visit_file_mut(&mut modified_ast);
-        
-        let modified_code = quote!(#modified_ast).to_string();
+        let modified_code = renamer.rename(code);
+
 
         println!("hi {}", modified_code);
         let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
@@ -132,12 +122,8 @@ fn is_valid_rust_var_name(name: &str) -> bool {
             }
         "#;
 
-        let ast = syn::parse_file(code).expect("Failed to parse code");
         let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
-        let mut modified_ast = ast.clone();
-        renamer.visit_file_mut(&mut modified_ast);
-        
-        let modified_code = quote!(#modified_ast).to_string();
+        let modified_code = renamer.rename(code);
 
         println!("hi {}", modified_code);
         let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
@@ -163,12 +149,8 @@ fn is_valid_rust_var_name(name: &str) -> bool {
             }
         "#;
 
-        let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new() };
-        let mut modified_ast = ast.clone();
-        renamer.visit_file_mut(&mut modified_ast);
-        
-        let modified_code = quote!(#modified_ast).to_string();
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
+        let modified_code = renamer.rename(code);
 
         println!("hi {}", modified_code);
         let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
