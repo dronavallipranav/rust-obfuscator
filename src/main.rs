@@ -5,9 +5,9 @@ extern crate syn;
 mod rename_tests;
 
 use rand::{Rng};
-use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro};
+use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro, Visibility, UseTree, UsePath, UseName, UseRename, ItemUse};
 use quote::quote;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use proc_macro2::{TokenStream, TokenTree, Group};
 
 // Function to generate a random name
@@ -47,12 +47,14 @@ fn random_name() -> String {
 
 struct VariableRenamer{
     renamed_vars: HashMap<String, String>,
+    imported_functions: HashSet<String>,
 }
 
 impl VariableRenamer {
     fn new() -> Self {
         VariableRenamer {
             renamed_vars: HashMap::new(),
+            imported_functions: HashSet::new(),
         }
     }
     //helper to process Macros tokenstream and check if it is an identifier or another macro or func call
@@ -76,15 +78,41 @@ impl VariableRenamer {
             }
         }).collect()
     }
-    
+
+    //scan use statements to identify imported functions and add them to blacklist
+    fn identify_imported_functions(&mut self, tree: &UseTree) {
+        match tree {
+            UseTree::Path(UsePath { ident: _, tree, .. }) => {
+                self.identify_imported_functions(tree);
+            },
+            UseTree::Name(UseName { ident }) => {
+                self.imported_functions.insert(ident.to_string());
+            },
+            UseTree::Rename(UseRename { rename, .. }) => {
+                self.imported_functions.insert(rename.to_string());
+            },
+            _ => {}
+        }
+    }
+
+}
+
+//check to see if the function is local, only rename local functions for now
+fn is_local_function(fn_item: &ItemFn) -> bool {
+    !matches!(fn_item.vis, Visibility::Public(_))
 }
 
 impl VisitMut for VariableRenamer {
+    //visit use statements to identify imported functions
+    fn visit_item_use_mut(&mut self, i: &mut ItemUse) {
+        self.identify_imported_functions(&i.tree);
+        syn::visit_mut::visit_item_use_mut(self, i);
+    }
 
     fn visit_item_fn_mut(&mut self, i: &mut ItemFn) {
         //rename function names unless it's main
         let old_name = i.sig.ident.to_string();
-        if old_name != "main"{
+        if old_name != "main" && is_local_function(i) && !self.imported_functions.contains(&old_name) {
             if !self.renamed_vars.contains_key(&old_name) {
                 let new_name = random_name();
                 self.renamed_vars.insert(old_name.clone(), new_name.clone());
@@ -181,12 +209,42 @@ impl VisitMut for VariableRenamer {
 
 fn main() {
     let code = r#"
-        fn main() {
-            let num1 = 10;
-            let num2 = 20;
-            println!("Formatted: {}", format!("Num1: {}, Num2: {}", num1, num2));
-        }
-    "#;
+            use network::fetch_data;
+            use syn::{visit_mut::VisitMut, Ident, ItemFn, Local, Expr, ExprPath, Macro, Visibility};
+
+            async fn fetch_data() -> Result<String, reqwest::Error> {
+                Ok("Mock response".to_string())
+            }
+
+            pub fn calculate_sum(num1: i32, num2: i32) -> i32 {
+                let result = num1 + num2;
+                result
+            }
+            impl VisitMut for VariableRenamer {
+
+                fn visit_item_fn_mut(&mut self, i: &mut ItemFn) {
+                    //rename function names unless it's main
+                    let old_name = i.sig.ident.to_string();
+                    if old_name != "main" && is_local_function(i) {
+                        if !self.renamed_vars.contains_key(&old_name) {
+                            let new_name = random_name();
+                            self.renamed_vars.insert(old_name.clone(), new_name.clone());
+                            i.sig.ident = Ident::new(&new_name, i.sig.ident.span());
+                        }
+                    }
+                }
+            }
+            #[tokio::main]
+            async fn main() {
+                let num1 = 10;
+                let num2 = 20;
+                match fetch_data().await {
+                    Ok(data) => println!("Data: {}", data),
+                    Err(e) => println!("Error: {}", e),
+                }
+                println!("Sum: {}", calculate_sum(num1, num2));
+            }
+        "#;
 
     let ast = syn::parse_file(code).expect("Unable to parse code");
 

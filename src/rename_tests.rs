@@ -26,7 +26,7 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         "#;
 
         let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
         let mut modified_ast = ast.clone();
         renamer.visit_file_mut(&mut modified_ast);
         
@@ -72,7 +72,7 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         "#;
 
         let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
         let mut modified_ast = ast.clone();
         renamer.visit_file_mut(&mut modified_ast);
         
@@ -100,7 +100,7 @@ fn is_valid_rust_var_name(name: &str) -> bool {
     "#;
 
         let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
         let mut modified_ast = ast.clone();
         renamer.visit_file_mut(&mut modified_ast);
         
@@ -133,7 +133,7 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         "#;
 
         let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new()  };
         let mut modified_ast = ast.clone();
         renamer.visit_file_mut(&mut modified_ast);
         
@@ -164,7 +164,7 @@ fn is_valid_rust_var_name(name: &str) -> bool {
         "#;
 
         let ast = syn::parse_file(code).expect("Failed to parse code");
-        let mut renamer = VariableRenamer { renamed_vars: HashMap::new() };
+        let mut renamer = VariableRenamer { renamed_vars: HashMap::new(), imported_functions: HashSet::new() };
         let mut modified_ast = ast.clone();
         renamer.visit_file_mut(&mut modified_ast);
         
