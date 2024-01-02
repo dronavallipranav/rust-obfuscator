@@ -1,5 +1,6 @@
 use syn::{ visit_mut::VisitMut, Block, Stmt, parse_quote, parse_file, Expr, Pat, PatIdent };
 use quote::quote;
+use rand::Rng;
 
 struct Obfuscator {
     loop_counter: u32,
@@ -35,6 +36,25 @@ impl Obfuscator {
 
         false
     }
+    fn generate_dummy_loop() -> syn::Stmt {
+        let initial_value = rand::thread_rng().gen_range(1..=10);
+        let increment_value = rand::thread_rng().gen_range(1..=5);
+
+        syn::parse_quote! {
+            {
+                let _is_dummy_145 = true;
+                let mut _dummy_counter = #initial_value;
+                let _dummy_increment = #increment_value;
+                let _dummy_upper_bound = 100;
+                loop {
+                    if _dummy_counter > _dummy_upper_bound || (_dummy_counter % 15 == 0 && _dummy_counter % 20 == 0){
+                        break;
+                    }
+                    _dummy_counter += _dummy_increment;
+                }
+            }
+        }
+    }
 }
 
 impl VisitMut for Obfuscator {
@@ -45,22 +65,7 @@ impl VisitMut for Obfuscator {
             return;
         }
 
-        let dummy_loop: Stmt = parse_quote! {
-            {
-                let _is_dummy_145 = true;
-                let mut _dummy_counter = 0;
-                let _dummy_upper_bound = 100;
-                loop {
-                    if
-                        (_dummy_counter % 13 == 0 && _dummy_counter % 7 == 0) ||
-                        _dummy_counter > _dummy_upper_bound
-                    {
-                        break;
-                    }
-                    _dummy_counter += 1;
-                }
-            }
-        };
+        let dummy_loop = Self::generate_dummy_loop();
         //insert loop at start of every block
         block.stmts.insert(0, dummy_loop);
         self.loop_counter += 1;

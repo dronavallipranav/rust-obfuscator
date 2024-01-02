@@ -46,6 +46,8 @@ fn test_variable_renamer() {
             name
         );
     }
+    let parse_result = syn::parse_file(&modified_code);
+    assert!(parse_result.is_ok(), "Modified code is not valid Rust code");
 }
 #[test]
 fn test_nested_function_calls() {
@@ -80,6 +82,8 @@ fn test_nested_function_calls() {
             name
         );
     }
+    let parse_result = syn::parse_file(&modified_code);
+    assert!(parse_result.is_ok(), "Modified code is not valid Rust code");
 }
 
 #[test]
@@ -104,6 +108,8 @@ fn test_nested_macros() {
             name
         );
     }
+    let parse_result = syn::parse_file(&modified_code);
+    assert!(parse_result.is_ok(), "Modified code is not valid Rust code");
 }
 #[test]
 fn test_user_defined_nested_macro() {
@@ -132,6 +138,8 @@ fn test_user_defined_nested_macro() {
             name
         );
     }
+    let parse_result = syn::parse_file(&modified_code);
+    assert!(parse_result.is_ok(), "Modified code is not valid Rust code");
 }
 #[test]
 fn test_function_in_macro() {
@@ -158,4 +166,6 @@ fn test_function_in_macro() {
             name
         );
     }
+    let parse_result = syn::parse_file(&modified_code);
+    assert!(parse_result.is_ok(), "Modified code is not valid Rust code");
 }
