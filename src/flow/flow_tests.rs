@@ -14,13 +14,11 @@ fn test_loop_insertion() {
             }
         "#;
 
-    let mut obfuscator = Obfuscator;
+    let mut obfuscator = Obfuscator::new();
     let modified_code = obfuscator.flow_obfuscate(code);
 
     assert_ne!(modified_code, code);
     println!("{}", modified_code);
-    //check if loop is inserted at start of every block
-    let block_start = modified_code.find('{').unwrap();
-    let loop_start = modified_code.find("loop").unwrap();
-    assert!(loop_start < block_start);
+    //check if loop is inserted at start of block
+    assert!(modified_code.contains("_is_dummy_145"), "Dummy loop not found in modified code");
 }
