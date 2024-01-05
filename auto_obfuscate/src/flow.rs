@@ -2,14 +2,14 @@ use syn::{ visit_mut::VisitMut, Block, Stmt, parse_quote, parse_file, Expr, Pat,
 use quote::quote;
 use rand::Rng;
 
-struct Obfuscator {
+struct FlowObfuscator {
     loop_counter: u32,
 }
 
 #[cfg(test)]
 mod flow_tests;
 
-impl Obfuscator {
+impl FlowObfuscator {
     fn new() -> Self {
         Self { loop_counter: 0 }
     }
@@ -50,14 +50,17 @@ impl Obfuscator {
                     if _dummy_counter > _dummy_upper_bound || (_dummy_counter % 15 == 0 && _dummy_counter % 20 == 0){
                         break;
                     }
-                    _dummy_counter += _dummy_increment;
+                    //prevent compiler optimizations
+                    unsafe {
+                        ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
+                    }
                 }
             }
         }
     }
 }
 
-impl VisitMut for Obfuscator {
+impl VisitMut for FlowObfuscator {
     fn visit_block_mut(&mut self, block: &mut Block) {
         //check if the block already contains the dummy loop
         if block.stmts.iter().any(|stmt| Self::is_dummy_loop(stmt)) || self.loop_counter % 3 != 0 {

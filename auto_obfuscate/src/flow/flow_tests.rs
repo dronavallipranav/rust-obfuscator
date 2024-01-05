@@ -14,7 +14,7 @@ fn test_loop_insertion() {
             }
         "#;
 
-    let mut obfuscator = Obfuscator::new();
+    let mut obfuscator = FlowObfuscator::new();
     let modified_code = obfuscator.flow_obfuscate(code);
 
     assert_ne!(modified_code, code);
@@ -44,7 +44,7 @@ fn test_loop_skip() {
             }
         "#;
 
-    let mut obfuscator = Obfuscator::new();
+    let mut obfuscator = FlowObfuscator::new();
     let modified_code = obfuscator.flow_obfuscate(code);
 
     assert_ne!(modified_code, code);
