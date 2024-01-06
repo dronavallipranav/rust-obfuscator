@@ -1,4 +1,4 @@
-use syn::{ visit_mut::VisitMut, Block, Stmt, parse_quote, parse_file, Expr, Pat, PatIdent };
+use syn::{ visit_mut::VisitMut, Block, Stmt, parse_file, Expr, Pat, PatIdent };
 use quote::quote;
 use rand::Rng;
 
