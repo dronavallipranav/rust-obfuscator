@@ -1,6 +1,7 @@
-use syn::{ visit_mut::VisitMut, Block, Stmt, parse_file, Expr, Pat, PatIdent };
+use syn::{ visit_mut::VisitMut, Block, Stmt, parse_file, Expr, Pat, PatIdent, parse_quote };
 use quote::quote;
-use rand::Rng;
+use rand::{ Rng, thread_rng };
+use rand::seq::SliceRandom;
 
 struct FlowObfuscator {
     loop_counter: u32,
@@ -36,27 +37,49 @@ impl FlowObfuscator {
 
         false
     }
-    fn generate_dummy_loop() -> syn::Stmt {
-        let initial_value = rand::thread_rng().gen_range(1..=10);
-        let increment_value = rand::thread_rng().gen_range(1..=5);
+    //helper to generate random dummy loop
+    fn generate_dummy_loop() -> Stmt {
+        let mut rng = thread_rng();
 
-        syn::parse_quote! {
-            {
-                let _is_dummy_145 = true;
-                let mut _dummy_counter = #initial_value;
-                let _dummy_increment = #increment_value;
-                let _dummy_upper_bound = 100;
-                loop {
-                    if _dummy_counter > _dummy_upper_bound || (_dummy_counter % 15 == 0 && _dummy_counter % 20 == 0){
-                        break;
-                    }
-                    //prevent compiler optimizations
-                    unsafe {
-                        ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
-                    }
-                }
+        let initial_value = rng.gen_range(1..=10);
+        let increment_value = rng.gen_range(1..=5);
+        let add_extra_dummy_variable = rng.gen_bool(0.5);
+
+        let mut statements = vec![
+            quote! { let mut _dummy_counter = #initial_value; },
+            quote! { let _dummy_increment = #increment_value; },
+            quote! { let _dummy_upper_bound = 100; }
+        ];
+
+        //add extra dummy variable occasionally
+        if add_extra_dummy_variable {
+            let extra_dummy_value = rng.gen_range(1..=10);
+            statements.push(quote! { let _extra_dummy_var = #extra_dummy_value; });
+        }
+
+        //randomize the order of variable assignments
+        statements.shuffle(&mut rng);
+
+        let loop_block =
+            quote! {
+        loop {
+            if _dummy_counter > _dummy_upper_bound{
+                break;
+            }
+            //prevent compiler optimizations
+            unsafe {
+                std::ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
             }
         }
+    };
+
+        parse_quote! {
+        {
+            let _is_dummy_145 = true;
+            #(#statements)*
+            #loop_block
+        }
+    }
     }
 }
 

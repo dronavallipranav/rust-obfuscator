@@ -2,6 +2,56 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::*;
 use std::env;
+use rand::Rng;
+use rand::seq::SliceRandom;
+
+#[proc_macro]
+pub fn flow_stmt(_: TokenStream) -> TokenStream {
+    let mut rng = rand::thread_rng();
+
+    let initial_value = rng.gen_range(1..=10);
+    let increment_value = rng.gen_range(1..=4);
+    let add_extra_dummy_variable = rng.gen_bool(0.5);
+
+    let mut statements = vec![
+        quote! { let mut _dummy_counter = #initial_value; },
+        quote! { let _dummy_increment = #increment_value; },
+        quote! { let _dummy_upper_bound = 100; }
+    ];
+
+    //add random dummy variable occasionally
+    if add_extra_dummy_variable {
+        let extra_dummy_value = rng.gen_range(1..=10);
+        statements.push(quote! { let _extra_dummy_var = #extra_dummy_value; });
+    }
+
+    //randomize the order of variable assignments
+    statements.shuffle(&mut rng);
+
+    let loop_block =
+        quote! {
+        loop {
+            if _dummy_counter > _dummy_upper_bound {
+                break;
+            }
+            //prevent compiler optimizations
+            unsafe {
+                std::ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
+            }
+        }
+    };
+
+    let generated_loop =
+        quote! {
+        {
+            let _is_dummy_145 = true;
+            #(#statements)*
+            #loop_block
+        }
+    };
+
+    TokenStream::from(generated_loop)
+}
 
 #[proc_macro]
 pub fn encrypt_string(input: TokenStream) -> TokenStream {
