@@ -20,5 +20,5 @@ jobs:
         override: true
 
     - name: Run tests
-      run: cargo test
+      run: RUST_TEST_THREADS=1 cargo test
 
