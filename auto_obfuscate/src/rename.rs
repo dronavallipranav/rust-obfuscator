@@ -1,9 +1,3 @@
-extern crate rand;
-extern crate syn;
-
-#[cfg(test)]
-mod rename_tests;
-
 use rand::{ Rng };
 use syn::{
     visit_mut::VisitMut,
@@ -24,6 +18,9 @@ use syn::{
 use quote::quote;
 use std::collections::{ HashMap, HashSet };
 use proc_macro2::{ TokenStream, TokenTree, Group };
+
+#[cfg(test)]
+mod rename_tests;
 
 // Function to generate a random name
 fn random_name() -> String {

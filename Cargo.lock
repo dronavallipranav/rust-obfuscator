@@ -32,15 +32,17 @@ dependencies = [
 name = "labyrinth"
 version = "0.1.0"
 dependencies = [
- "labyrinth_helper",
+ "labyrinth_macros",
+]
+
+[[package]]
+name = "labyrinth_macros"
+version = "0.1.0"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
 ]
-
-[[package]]
-name = "labyrinth_helper"
-version = "0.1.0"
 
 [[package]]
 name = "libc"

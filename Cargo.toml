@@ -2,5 +2,5 @@
 members = [
     "auto_obfuscate",
     "labyrinth",
-    "labyrinth_helper",
+    "labyrinth_macros",
 ]
