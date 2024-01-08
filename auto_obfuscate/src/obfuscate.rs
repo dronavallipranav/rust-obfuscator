@@ -22,10 +22,8 @@ impl Obfuscator {
         if self.string_obfuscator.enabled {
             result = self.string_obfuscator.obfuscate_strings(&result);
         }
-        println!("{}", result);
         if self.flow_obfuscator.enabled {
             result = self.flow_obfuscator.flow_obfuscate(&result);
-            println!("{}", result);
         }
         if self.rename_obfuscator.enabled {
             result = self.rename_obfuscator.rename(&result);

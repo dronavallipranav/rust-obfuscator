@@ -112,7 +112,7 @@ impl VisitMut for FlowObfuscator {
         //if use macro enabled, use macro to expand to dummy loop
         if self.use_macro {
             let macro_call = syn::parse_quote! {
-                labyrinth_macros::generate_dummy_loop!()
+                labyrinth::flow_stmt!();
             };
             block.stmts.insert(0, macro_call);
         } else {
