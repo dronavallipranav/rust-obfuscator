@@ -11,4 +11,5 @@ quote = "1.0"
 proc-macro2 = "1.0"
 rand = "0.8.0"
 regex = "1.5.4"
+clap = "3.0"
 labyrinth = { path = "../labyrinth" }

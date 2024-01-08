@@ -2,6 +2,23 @@ use crate::string::{ StringObfuscator, StringConfig };
 use crate::rename::{ VariableRenamer, RenameConfig };
 use crate::flow::{ FlowObfuscator, FlowConfig };
 
+#[derive(Clone)]
+pub struct Config {
+    pub rename_config: RenameConfig,
+    pub flow_config: FlowConfig,
+    pub string_config: StringConfig,
+}
+
+impl Config {
+    pub fn default() -> Self {
+        Self {
+            rename_config: RenameConfig::default(),
+            flow_config: FlowConfig::default(),
+            string_config: StringConfig::default(),
+        }
+    }
+}
+
 pub struct Obfuscator {
     rename_obfuscator: VariableRenamer,
     flow_obfuscator: FlowObfuscator,
@@ -14,6 +31,13 @@ impl Obfuscator {
             rename_obfuscator: VariableRenamer::new(RenameConfig::default()),
             flow_obfuscator: FlowObfuscator::new(FlowConfig::default()),
             string_obfuscator: StringObfuscator::new(StringConfig::default()),
+        }
+    }
+    pub fn from_config(config: Config) -> Self {
+        Self {
+            rename_obfuscator: VariableRenamer::new(config.rename_config),
+            flow_obfuscator: FlowObfuscator::new(config.flow_config),
+            string_obfuscator: StringObfuscator::new(config.string_config),
         }
     }
 

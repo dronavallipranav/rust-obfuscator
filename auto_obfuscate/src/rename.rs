@@ -22,36 +22,7 @@ use proc_macro2::{ TokenStream, TokenTree, Group };
 #[cfg(test)]
 mod rename_tests;
 
-// Function to generate a random name
-fn random_name() -> String {
-    let mut rng = rand::thread_rng();
-    let name_length = rng.gen_range(3..=10);
-
-    let mut last_char_was_underscore = false;
-    let mut name = String::new();
-
-    while name.len() < name_length {
-        let next_char = if rng.gen_bool(0.8) { rng.gen_range(b'a'..=b'z') as char } else { '_' };
-
-        // Ensure not two underscores in a row
-        if !(last_char_was_underscore && next_char == '_') {
-            name.push(next_char);
-            last_char_was_underscore = next_char == '_';
-        }
-    }
-    // Ensure the name does not start or end with an underscore
-    if name.starts_with('_') {
-        name.remove(0);
-        name.insert(0, rng.gen_range(b'a'..=b'z') as char);
-    }
-    if name.ends_with('_') {
-        name.pop();
-        name.push(rng.gen_range(b'a'..=b'z') as char);
-    }
-
-    name
-}
-
+#[derive(Clone)]
 pub struct RenameConfig {
     pub enable_rename_obfuscation: bool,
 }
@@ -232,4 +203,34 @@ impl VisitMut for VariableRenamer {
             pat_ident.ident = Ident::new(&new_name, pat_ident.ident.span());
         }
     }
+}
+
+// Function to generate a random name
+fn random_name() -> String {
+    let mut rng = rand::thread_rng();
+    let name_length = rng.gen_range(3..=10);
+
+    let mut last_char_was_underscore = false;
+    let mut name = String::new();
+
+    while name.len() < name_length {
+        let next_char = if rng.gen_bool(0.8) { rng.gen_range(b'a'..=b'z') as char } else { '_' };
+
+        // Ensure not two underscores in a row
+        if !(last_char_was_underscore && next_char == '_') {
+            name.push(next_char);
+            last_char_was_underscore = next_char == '_';
+        }
+    }
+    // Ensure the name does not start or end with an underscore
+    if name.starts_with('_') {
+        name.remove(0);
+        name.insert(0, rng.gen_range(b'a'..=b'z') as char);
+    }
+    if name.ends_with('_') {
+        name.pop();
+        name.push(rng.gen_range(b'a'..=b'z') as char);
+    }
+
+    name
 }

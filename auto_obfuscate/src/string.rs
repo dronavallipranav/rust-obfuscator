@@ -5,6 +5,7 @@ use proc_macro2::{ TokenStream, TokenTree };
 #[cfg(test)]
 mod string_tests;
 
+#[derive(Clone)]
 pub struct StringConfig {
     pub enable_string_obfuscation: bool,
     pub percentage: u8,

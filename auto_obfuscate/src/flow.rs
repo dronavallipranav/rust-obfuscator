@@ -6,6 +6,7 @@ use rand::seq::SliceRandom;
 #[cfg(test)]
 mod flow_tests;
 
+#[derive(Clone)]
 pub struct FlowConfig {
     pub enable_flow_obfuscation: bool,
     pub use_macro: bool,
