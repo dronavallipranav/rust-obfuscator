@@ -39,7 +39,6 @@ fn random_name() -> String {
             last_char_was_underscore = next_char == '_';
         }
     }
-
     // Ensure the name does not start or end with an underscore
     if name.starts_with('_') {
         name.remove(0);
@@ -53,16 +52,31 @@ fn random_name() -> String {
     name
 }
 
-struct VariableRenamer {
+pub struct RenameConfig {
+    pub enable_rename_obfuscation: bool,
+}
+
+//default rename to false
+impl RenameConfig {
+    pub fn default() -> Self {
+        Self {
+            enable_rename_obfuscation: false,
+        }
+    }
+}
+
+pub struct VariableRenamer {
     renamed_vars: HashMap<String, String>,
     imported_functions: HashSet<String>,
+    pub enabled: bool,
 }
 
 impl VariableRenamer {
-    fn new() -> Self {
+    pub fn new(config: RenameConfig) -> Self {
         VariableRenamer {
             renamed_vars: HashMap::new(),
             imported_functions: HashSet::new(),
+            enabled: config.enable_rename_obfuscation,
         }
     }
     //helper to process Macros tokenstream and check if it is an identifier or another macro or func call
@@ -103,7 +117,7 @@ impl VariableRenamer {
             _ => {}
         }
     }
-    fn rename(&mut self, code: &str) -> String {
+    pub fn rename(&mut self, code: &str) -> String {
         let ast = parse_file(code).expect("Failed to parse code");
         let mut modified_ast = ast.clone();
         self.visit_file_mut(&mut modified_ast);

@@ -25,8 +25,10 @@ fn test_variable_renamer() {
                 println!("The sum is: {}", sum);
             }
         "#;
-
-    let mut renamer = VariableRenamer::new();
+    let rename_config = RenameConfig {
+        enable_rename_obfuscation: true,
+    };
+    let mut renamer = VariableRenamer::new(rename_config);
     let modified_code = renamer.rename(code);
 
     //compare the modified code with the original
@@ -70,8 +72,10 @@ fn test_nested_function_calls() {
                 println!("The sum is: {}", sum);
             }
         "#;
-
-    let mut renamer = VariableRenamer::new();
+    let rename_config = RenameConfig {
+        enable_rename_obfuscation: true,
+    };
+    let mut renamer = VariableRenamer::new(rename_config);
     let modified_code = renamer.rename(code);
 
     let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
@@ -96,8 +100,10 @@ fn test_nested_macros() {
             println!("Formatted: {}", format!("Num1: {}, Num2: {}", num1, num2));
         }
     "#;
-
-    let mut renamer = VariableRenamer::new();
+    let rename_config = RenameConfig {
+        enable_rename_obfuscation: true,
+    };
+    let mut renamer = VariableRenamer::new(rename_config);
     let modified_code = renamer.rename(code);
 
     let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
@@ -126,8 +132,10 @@ fn test_user_defined_nested_macro() {
                 println!("Num2: {}", identity!(num2));
             }
         "#;
-
-    let mut renamer = VariableRenamer::new();
+    let rename_config = RenameConfig {
+        enable_rename_obfuscation: true,
+    };
+    let mut renamer = VariableRenamer::new(rename_config);
     let modified_code = renamer.rename(code);
 
     let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];
@@ -154,8 +162,10 @@ fn test_function_in_macro() {
                 println!("Num + 1: {}", add_one(num));
             }
         "#;
-
-    let mut renamer = VariableRenamer::new();
+    let rename_config = RenameConfig {
+        enable_rename_obfuscation: true,
+    };
+    let mut renamer = VariableRenamer::new(rename_config);
     let modified_code = renamer.rename(code);
 
     let original_names = vec!["calculate_sum", "add_one", "num1", "num2", "result"];

@@ -78,6 +78,7 @@ fn xor_cipher(input: &str, key: &str) -> String {
         .collect()
 }
 
+//for self-contained tests
 fn decrypt_string(encrypted: &str) -> String {
     let key = std::env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
     encrypted

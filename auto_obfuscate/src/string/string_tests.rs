@@ -8,7 +8,8 @@ fn test_replacement_in_macro() {
             println!("Hello, world!");
         }
     "#;
-    let mut string_obfuscator = StringObfuscator::new();
+    let string_config = StringConfig::default();
+    let mut string_obfuscator = StringObfuscator::new(string_config);
     let obfuscated_code = string_obfuscator.obfuscate_strings(code);
     assert_ne!(code, obfuscated_code);
     assert!(obfuscated_code.contains("encrypt_string"));
@@ -24,7 +25,8 @@ fn test_replacement_in_expr() {
             let b = "Hello, world!";
         }
     "#;
-    let mut string_obfuscator = StringObfuscator::new();
+    let string_config = StringConfig::default();
+    let mut string_obfuscator = StringObfuscator::new(string_config);
     let obfuscated_code = string_obfuscator.obfuscate_strings(code);
     assert_ne!(code, obfuscated_code);
     assert!(obfuscated_code.contains("encrypt_string"));
@@ -44,7 +46,8 @@ fn test_replacement_in_nested_macro() {
     }
 "#;
 
-    let mut string_obfuscator = StringObfuscator::new();
+    let string_config = StringConfig::default();
+    let mut string_obfuscator = StringObfuscator::new(string_config);
     let obfuscated_code = string_obfuscator.obfuscate_strings(code);
     assert_ne!(code, obfuscated_code);
     assert!(obfuscated_code.contains("encrypt_string"));

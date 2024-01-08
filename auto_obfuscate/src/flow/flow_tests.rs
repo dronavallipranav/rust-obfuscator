@@ -13,8 +13,11 @@ fn test_loop_insertion() {
                 println!("The sum is: {}", sum);
             }
         "#;
-
-    let mut obfuscator = FlowObfuscator::new();
+    let flow_config = FlowConfig {
+        enable_flow_obfuscation: true,
+        use_macro: false,
+    };
+    let mut obfuscator = FlowObfuscator::new(flow_config);
     let modified_code = obfuscator.flow_obfuscate(code);
 
     assert_ne!(modified_code, code);
@@ -43,8 +46,11 @@ fn test_loop_skip() {
                 println!("The sum is: {}", sum);
             }
         "#;
-
-    let mut obfuscator = FlowObfuscator::new();
+    let flow_config = FlowConfig {
+        enable_flow_obfuscation: true,
+        use_macro: false,
+    };
+    let mut obfuscator = FlowObfuscator::new(flow_config);
     let modified_code = obfuscator.flow_obfuscate(code);
 
     assert_ne!(modified_code, code);

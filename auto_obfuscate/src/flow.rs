@@ -3,18 +3,37 @@ use quote::quote;
 use rand::{ Rng, thread_rng };
 use rand::seq::SliceRandom;
 
-struct FlowObfuscator {
-    loop_counter: u32,
-}
-
 #[cfg(test)]
 mod flow_tests;
 
-impl FlowObfuscator {
-    fn new() -> Self {
-        Self { loop_counter: 0 }
+pub struct FlowConfig {
+    pub enable_flow_obfuscation: bool,
+    pub use_macro: bool,
+}
+impl FlowConfig {
+    pub fn default() -> Self {
+        Self {
+            enable_flow_obfuscation: true,
+            use_macro: true,
+        }
     }
-    fn flow_obfuscate(&mut self, code: &str) -> String {
+}
+
+pub struct FlowObfuscator {
+    loop_counter: u32,
+    pub use_macro: bool,
+    pub enabled: bool,
+}
+
+impl FlowObfuscator {
+    pub fn new(config: FlowConfig) -> Self {
+        Self {
+            loop_counter: 0,
+            use_macro: config.use_macro,
+            enabled: config.enable_flow_obfuscation,
+        }
+    }
+    pub fn flow_obfuscate(&mut self, code: &str) -> String {
         let ast = parse_file(code).expect("Failed to parse code");
         let mut modified_ast = ast.clone();
         self.visit_file_mut(&mut modified_ast);
@@ -90,10 +109,17 @@ impl VisitMut for FlowObfuscator {
             self.loop_counter += 1;
             return;
         }
+        //if use macro enabled, use macro to expand to dummy loop
+        if self.use_macro {
+            let macro_call = syn::parse_quote! {
+                labyrinth_macros::generate_dummy_loop!()
+            };
+            block.stmts.insert(0, macro_call);
+        } else {
+            let dummy_loop = Self::generate_dummy_loop();
+            block.stmts.insert(0, dummy_loop);
+        }
 
-        let dummy_loop = Self::generate_dummy_loop();
-        //insert loop at start of every block
-        block.stmts.insert(0, dummy_loop);
         self.loop_counter += 1;
         syn::visit_mut::visit_block_mut(self, block);
     }

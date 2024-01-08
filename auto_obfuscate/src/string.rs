@@ -5,11 +5,30 @@ use proc_macro2::{ TokenStream, TokenTree };
 #[cfg(test)]
 mod string_tests;
 
-struct StringObfuscator;
+pub struct StringConfig {
+    pub enable_string_obfuscation: bool,
+    pub percentage: u8,
+}
+impl StringConfig {
+    pub fn default() -> Self {
+        Self {
+            enable_string_obfuscation: true,
+            percentage: 100,
+        }
+    }
+}
+
+pub struct StringObfuscator {
+    pub enabled: bool,
+    percentage: u8,
+}
 
 impl StringObfuscator {
-    pub fn new() -> Self {
-        StringObfuscator
+    pub fn new(config: StringConfig) -> Self {
+        Self {
+            enabled: config.enable_string_obfuscation,
+            percentage: config.percentage,
+        }
     }
     fn process_macro_tokens(&self, tokens: TokenStream) -> TokenStream {
         tokens
@@ -44,7 +63,7 @@ impl StringObfuscator {
             .collect()
     }
 
-    fn obfuscate_strings(&mut self, code: &str) -> String {
+    pub fn obfuscate_strings(&mut self, code: &str) -> String {
         let ast = parse_file(code).expect("Failed to parse code");
         let mut modified_ast = ast.clone();
         self.visit_file_mut(&mut modified_ast);
@@ -56,6 +75,9 @@ impl StringObfuscator {
 impl VisitMut for StringObfuscator {
     //replace all string literals with call to obfuscation macro
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
+        if self.enabled == false {
+            return;
+        }
         if let Expr::Lit(expr_lit) = expr {
             if let Lit::Str(_) = &expr_lit.lit {
                 //replace string literal with macro call
@@ -72,6 +94,9 @@ impl VisitMut for StringObfuscator {
         syn::visit_mut::visit_expr_mut(self, expr);
     }
     fn visit_macro_mut(&mut self, mac: &mut Macro) {
+        if self.enabled == false {
+            return;
+        }
         //check to see if macro is not obfuscation macro
         if
             mac.path.segments.len() == 2 &&
