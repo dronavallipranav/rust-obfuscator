@@ -1,3 +1,7 @@
+//! `labyrinth_macros` crate provides procedural macros for compile-time obfuscation. NOT MEANT TO BE USED STANDALONE.
+//!
+//! This crate includes macros like `encrypt_string` and `flow_stmt` which are used
+//! to enhance the security of Rust code by obfuscating strings and control flows.
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::*;
@@ -5,6 +9,11 @@ use std::env;
 use rand::Rng;
 use rand::seq::SliceRandom;
 
+/// A procedural macro that adds a compile-time randomly generated loop and variables.
+///
+/// # Note
+/// The unsafe operation is meant to help the dummy loop survive compiler optimizations. only writes to dummy variable
+///
 #[proc_macro]
 pub fn flow_stmt(_: TokenStream) -> TokenStream {
     let mut rng = rand::thread_rng();
@@ -52,7 +61,11 @@ pub fn flow_stmt(_: TokenStream) -> TokenStream {
 
     TokenStream::from(generated_loop)
 }
-
+/// A procedural macro that encrypts a string literal at compile time.
+///
+/// # Parameters
+/// - `input`: The string literal to be encrypted.
+///
 #[proc_macro]
 pub fn encrypt_string(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as LitStr);
@@ -89,6 +102,7 @@ fn decrypt_string(encrypted: &str) -> String {
         .collect()
 }
 
+//unit tests testing decryption logic
 #[cfg(test)]
 mod tests {
     use super::*;

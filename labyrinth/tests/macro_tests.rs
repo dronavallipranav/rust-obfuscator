@@ -1,3 +1,4 @@
+//integration tests testing whole crate
 #[test]
 fn test_encrypt_macro() {
     let decrypted = labyrinth::encrypt_string!("Hello World");

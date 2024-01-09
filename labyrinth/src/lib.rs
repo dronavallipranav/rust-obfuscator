@@ -1,5 +1,11 @@
+//re-export proc macro crate
 pub use labyrinth_macros::*;
-//helper function to decrypt string at runtime
+
+/// A helper decryption function meant to decrypt encrypted strings at runtime
+///
+/// # Parameters
+/// - `input`: The encrypted string literal
+///
 pub fn decrypt_string(encrypted: &str) -> String {
     let key = std::env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
     encrypted
