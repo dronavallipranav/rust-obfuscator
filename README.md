@@ -11,7 +11,7 @@
 ## Features
 
 - **String Encryption**: Encrypts string literals in your code at compile time.
-- **Control Flow Obfuscation**: Introduces compile-dummy dummy loops and random variables into control flows complicating the logic and structure of the code.
+- **Control Flow Obfuscation**: Introduces compile-dummy dummy loops and random variables.
 - Note: for truly random control flow and variables, you can disable the insertion of the flow_macro using the **disable_macro** flag, but this will directly affect the source code.
 - **Customizable Obfuscation**: Offers flexibility to enable or disable specific obfuscation features based on your requirements.
 - **Variable Renaming**: Obfuscation of the source code directly, if you'd like to ship the code or just want to make your code look worse.
