@@ -15,7 +15,7 @@ Add `labyrinth` to your `Cargo.toml` as a dependency:
 
 ```toml
 [dependencies]
-labyrinth = "0.1.0"
+labyrinth = "1.0.0"
 ```
 
 # Usage

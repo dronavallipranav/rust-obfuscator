@@ -1,6 +1,6 @@
 [package]
 name = "labyrinth"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Pranav Dronavalli <dronavallipranav@gmail.com>"]
 description = "A procedural macro library to obfuscate Rust code. Provides compile-time string encryption and random flow obfuscation."
@@ -10,4 +10,4 @@ repository = "https://github.com/dronavallipranav/rust-obfuscator/tree/main/laby
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-labyrinth_macros = { path = "../labyrinth_macros" }
+labyrinth_macros = "1.0.0"
