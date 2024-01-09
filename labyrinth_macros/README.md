@@ -1,6 +1,6 @@
 # labyrinth_macros
 
-`labyrinth_macros` is a procedural macro crate designed to complement the `labyrinth` super crate. It provides powerful compile-time string and control flow obfuscation capabilities, aimed at enhancing the security and complexity of Rust code. Not meant to be used standalone, necessary obfuscation features are in the super crate `labyrinth`
+`labyrinth_macros` is a procedural macro crate designed to complement the `cryptify` super crate. It provides compile-time string and control flow obfuscation capabilities, aimed at enhancing the security and complexity of Rust code. Not meant to be used standalone, necessary obfuscation features are in the super crate `cryptify`
 
 ## Features
 
