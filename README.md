@@ -18,6 +18,13 @@
 
 ## Installation
 
+Add `cryptify` to your `Cargo.toml` as a dependency:
+
+```toml
+[dependencies]
+cryptify = "1.0.0"
+```
+
 To install `rust-obfuscator`, clone the repository and build the tool using Cargo from the root:
 ```
 cargo build --release --bin rust-obfuscator
@@ -29,7 +36,11 @@ cp ./target/release/rust-obfuscator .
 
 # Usage
 The binary can be used on either a file or a directory. If provided with a directory it will only modify rust source files within that directory not any subdirectories
+- Add to source code you'd like to modify
+```rs
+use cryptify;
 ```
+```sh
 rust-obfuscator path/to/your_project <Options>
 ```
 - All Obfuscated code will be under the **obfuscated_code** directory that is created from the directory the tool was run.
@@ -41,7 +52,7 @@ rust-obfuscator path/to/your_project <Options>
 - --var: Enables variable renaming source code obfuscation.
 
 ### Example usage with flag
-```
+```sh
 rust-obfuscator path/to/your_project --no_flow 
 ```
 (disables flow obfuscation)

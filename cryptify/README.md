@@ -37,7 +37,7 @@ Hello World!
 ```
 ## Example of expanded Flow_Stmt!
 
-```
+```rs
     {
         let _is_dummy_145 = true;
         let _dummy_upper_bound = 100;
