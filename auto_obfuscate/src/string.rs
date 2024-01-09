@@ -1,4 +1,15 @@
-use syn::{ visit_mut::VisitMut, parse_file, parse2, parse_str, Expr, LitStr, Lit, Macro };
+use syn::{
+    visit_mut::VisitMut,
+    visit::Visit,
+    parse_file,
+    parse2,
+    parse_str,
+    Expr,
+    LitStr,
+    Lit,
+    Macro,
+    File,
+};
 use quote::quote;
 use proc_macro2::{ TokenStream, TokenTree };
 
@@ -21,7 +32,10 @@ impl StringConfig {
 
 pub struct StringObfuscator {
     pub enabled: bool,
+    #[allow(dead_code)]
     percentage: u8,
+    encrypted_count: usize,
+    strings_to_encrypt: usize,
 }
 
 impl StringObfuscator {
@@ -29,6 +43,8 @@ impl StringObfuscator {
         Self {
             enabled: config.enable_string_obfuscation,
             percentage: config.percentage,
+            encrypted_count: 0,
+            strings_to_encrypt: 0,
         }
     }
     fn process_macro_tokens(&self, tokens: TokenStream) -> TokenStream {
@@ -66,6 +82,15 @@ impl StringObfuscator {
 
     pub fn obfuscate_strings(&mut self, code: &str) -> String {
         let ast = parse_file(code).expect("Failed to parse code");
+
+        let total_strings = count_string_literals(&ast);
+        let strings_to_encrypt = (
+            ((self.percentage as f32) / 100.0) *
+            (total_strings as f32)
+        ).ceil() as usize;
+        self.encrypted_count = 0;
+        self.strings_to_encrypt = strings_to_encrypt;
+
         let mut modified_ast = ast.clone();
         self.visit_file_mut(&mut modified_ast);
         let modified_code = quote!(#modified_ast).to_string();
@@ -76,7 +101,10 @@ impl StringObfuscator {
 impl VisitMut for StringObfuscator {
     //replace all string literals with call to obfuscation macro
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
-        if self.enabled == false {
+        if
+            !self.enabled ||
+            (self.encrypted_count >= self.strings_to_encrypt && self.percentage != 100)
+        {
             return;
         }
         if let Expr::Lit(expr_lit) = expr {
@@ -86,7 +114,7 @@ impl VisitMut for StringObfuscator {
                     quote! {
                     labyrinth::encrypt_string!(#expr_lit)
                 };
-
+                self.encrypted_count += 1;
                 //replace expression to use macro call
                 *expr = parse2(macro_call).expect("Failed to parse macro call");
             }
@@ -110,4 +138,26 @@ impl VisitMut for StringObfuscator {
         let new_tokens = self.process_macro_tokens(mac.tokens.clone());
         mac.tokens = new_tokens;
     }
+}
+
+struct StringLiteralCounter {
+    count: usize,
+}
+
+impl StringLiteralCounter {
+    fn new() -> Self {
+        Self { count: 0 }
+    }
+}
+
+impl<'ast> Visit<'ast> for StringLiteralCounter {
+    fn visit_lit_str(&mut self, _lit_str: &'ast LitStr) {
+        self.count += 1;
+    }
+}
+
+fn count_string_literals(ast: &File) -> usize {
+    let mut counter = StringLiteralCounter::new();
+    counter.visit_file(ast);
+    counter.count
 }
