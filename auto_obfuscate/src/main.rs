@@ -87,6 +87,12 @@ fn process_file(file_path: &Path, config: &Config) {
         let mut obfuscator = Obfuscator::from_config(config.clone());
         let obfuscated_code = obfuscator.obfuscate(&code);
 
+        //check if obfuscated code is valid Rust code
+        let parse_result = syn::parse_file(&obfuscated_code);
+        if parse_result.is_err() {
+            eprintln!("Obfuscated code is not valid Rust code");
+            return;
+        }
         write_obfuscated_code(file_path, &obfuscated_code);
     }
 }
@@ -96,5 +102,6 @@ fn write_obfuscated_code(original_path: &Path, obfuscated_code: &str) {
     fs::create_dir_all(&obfuscated_dir).expect("Failed to create directory");
 
     let obfuscated_path = obfuscated_dir.join(original_path.file_name().unwrap());
+    println!("Writing to {:?}", obfuscated_path);
     fs::write(obfuscated_path, obfuscated_code).expect("Failed to write obfuscated code");
 }

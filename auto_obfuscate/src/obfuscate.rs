@@ -26,6 +26,7 @@ pub struct Obfuscator {
 }
 
 impl Obfuscator {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
             rename_obfuscator: VariableRenamer::new(RenameConfig::default()),

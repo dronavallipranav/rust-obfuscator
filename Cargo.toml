@@ -4,3 +4,4 @@ members = [
     "labyrinth",
     "labyrinth_macros",
 ]
+resolver = "2"
