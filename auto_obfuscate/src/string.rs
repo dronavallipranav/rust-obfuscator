@@ -84,10 +84,13 @@ impl StringObfuscator {
         let ast = parse_file(code).expect("Failed to parse code");
 
         let total_strings = count_string_literals(&ast);
+        println!("total strings: {}", total_strings);
         let strings_to_encrypt = (
             ((self.percentage as f32) / 100.0) *
             (total_strings as f32)
         ).ceil() as usize;
+        println!("percentage: {}", self.percentage);
+        println!("Encrypting {} strings", strings_to_encrypt);
         self.encrypted_count = 0;
         self.strings_to_encrypt = strings_to_encrypt;
 
