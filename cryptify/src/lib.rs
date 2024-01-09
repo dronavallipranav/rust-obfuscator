@@ -7,7 +7,7 @@ pub use labyrinth_macros::*;
 /// - `input`: The encrypted string literal
 ///
 pub fn decrypt_string(encrypted: &str) -> String {
-    let key = std::env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
+    let key = std::env::var("CRYPTIFY_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
     encrypted
         .chars()
         .zip(key.chars().cycle())

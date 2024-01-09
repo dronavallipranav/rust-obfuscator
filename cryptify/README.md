@@ -1,6 +1,6 @@
-# labyrinth
+# cryptify
 
-`labyrinth` is a procedural macro crate for compile-time rust obfuscation. It provides the user with string encryption and compile-time determined flow obfuscation and random variables which survive compile-time optimization.
+`cryptify` is a procedural macro crate for compile-time rust obfuscation. It provides the user with string encryption and compile-time determined flow obfuscation and random variables which survive compile-time optimization.
 
 
 [rust-obfuscator](https://github.com/dronavallipranav/rust-obfuscator) - Check out this auto obfuscator tool for easier usage and integration
@@ -11,23 +11,26 @@
 
 # Installation
 
-Add `labyrinth` to your `Cargo.toml` as a dependency:
+Add `cryptify` to your `Cargo.toml` as a dependency:
 
 ```toml
 [dependencies]
-labyrinth = "1.0.0"
+cryptify = "1.0.0"
 ```
 
 # Usage
 
 ## Bring macro into scope
 ```
-use labyrinth;
+use cryptify;
 
 fn main(){
-    println!(labyrinth::encrypt_string("Hello, World!"));
+    println!(cryptify::encrypt_string("Hello, World!"));
 }
 ```
+
+Set the **CRYPTIFY_KEY** environment variable for custom encryption defaults to fixed key
+
 ## Output
 ```
 Hello World!
@@ -70,4 +73,4 @@ Hello World!
 ```
 
 # License
-labyrinth is licensed under the MIT License - see the [LICENSE](https://github.com/dronavallipranav/rust-obfuscator/blob/main/LICENSE) file for details.
+cryptify is licensed under the MIT License - see the [LICENSE](https://github.com/dronavallipranav/rust-obfuscator/blob/main/LICENSE) file for details.

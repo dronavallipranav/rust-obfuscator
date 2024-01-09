@@ -1,5 +1,5 @@
 [package]
-name = "labyrinth"
+name = "cryptify"
 version = "1.0.0"
 edition = "2021"
 authors = ["Pranav Dronavalli <dronavallipranav@gmail.com>"]
@@ -10,4 +10,4 @@ repository = "https://github.com/dronavallipranav/rust-obfuscator/tree/main/laby
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-labyrinth_macros = "1.0.0"
+labyrinth_macros = "2.0.0"
