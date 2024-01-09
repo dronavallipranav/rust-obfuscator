@@ -61,7 +61,7 @@ impl StringObfuscator {
                             if let Ok(lit_str) = parse_str::<LitStr>(&lit_str) {
                                 let macro_call: TokenStream =
                                     quote! {
-                        labyrinth::encrypt_string!(#lit_str)
+                        cryptify::encrypt_string!(#lit_str)
                     };
                                 return macro_call;
                             }
@@ -112,7 +112,7 @@ impl VisitMut for StringObfuscator {
                 //replace string literal with macro call
                 let macro_call =
                     quote! {
-                    labyrinth::encrypt_string!(#expr_lit)
+                    cryptify::encrypt_string!(#expr_lit)
                 };
                 self.encrypted_count += 1;
                 //replace expression to use macro call
@@ -129,7 +129,7 @@ impl VisitMut for StringObfuscator {
         //check to see if macro is not obfuscation macro
         if
             mac.path.segments.len() == 2 &&
-            mac.path.segments[0].ident == "labyrinth" &&
+            mac.path.segments[0].ident == "cryptify" &&
             mac.path.segments[1].ident == "encrypt_string"
         {
             return;
