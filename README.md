@@ -44,6 +44,7 @@ use cryptify;
 rust-obfuscator path/to/your_project <Options>
 ```
 - All Obfuscated code will be under the **obfuscated_code** directory that is created from the directory the tool was run.
+- **Recommended to use an auto-formatter with the obfuscated code as syn naturally modifies the structure and it will be written as one line**
 
 ## Option Flags
 - --no_string: Disables string obfuscation.
@@ -58,4 +59,4 @@ rust-obfuscator path/to/your_project --no_flow
 (disables flow obfuscation)
 
 # License
-labyrinth_macros is licensed under the MIT License - see the [LICENSE](https://github.com/dronavallipranav/rust-obfuscator/blob/main/LICENSE) file for details.
+rust-obfuscator is licensed under the MIT License - see the [LICENSE](https://github.com/dronavallipranav/rust-obfuscator/blob/main/LICENSE) file for details.
