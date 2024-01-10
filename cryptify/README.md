@@ -21,11 +21,12 @@ cryptify = "1.0.0"
 # Usage
 
 ## Bring macro into scope
-```
+```rs
 use cryptify;
 
 fn main(){
-    println!(cryptify::encrypt_string("Hello, World!"));
+    let decrypted = cryptify::encrypt_string("Hello, World!");
+    println!(decrypted);
 }
 ```
 
