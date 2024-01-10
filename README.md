@@ -45,7 +45,7 @@ The binary can be used on either a file or a directory. If provided with a direc
 use cryptify;
 ```
 ```sh
-rust-obfuscator path/to/your_project <Options>
+./rust-obfuscator path/to/your_project <Options>
 ```
 - All Obfuscated code will be under the **obfuscated_code** directory that is created from the directory the tool was run.
 - **Recommended to use a Rust Formatter with the obfuscated code as syn naturally modifies the structure and it will be written to the file as one line**
