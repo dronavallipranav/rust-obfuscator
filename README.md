@@ -48,7 +48,7 @@ use cryptify;
 rust-obfuscator path/to/your_project <Options>
 ```
 - All Obfuscated code will be under the **obfuscated_code** directory that is created from the directory the tool was run.
-- **Recommended to use an auto-formatter with the obfuscated code as syn naturally modifies the structure and it will be written as one line**
+- **Recommended to use a Rust Formatter with the obfuscated code as syn naturally modifies the structure and it will be written to the file as one line**
 
 ## Option Flags
 - --no_string: Disables string obfuscation.
@@ -62,5 +62,86 @@ rust-obfuscator path/to/your_project --no_flow
 ```
 (disables flow obfuscation)
 
+#Input
+-running the tool with no config
+```rs
+use cryptify;
+mod word_counter;
+use std::env;
+use std::fs;
+use word_counter::count_words;
+fn main() {
+    let b = "Hello World";
+    println!("{}", b);
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        eprintln!("Usage: {} <filename>", args[0]);
+        return;
+    }
+    let filename = &args[1];
+    let content = fs::read_to_string(filename).expect("Could not read file");
+    let word_counts = count_words(&content);
+    for (word, count) in word_counts.iter() {
+        println!("{}: {}", word, count);
+    }
+}
+
+fn dummy() {
+    let a = 1;
+    let b = 2;
+    let c = a + b;
+    println!("{}", c);
+}
+
+fn calc_sum(a: i32, b: i32) -> i32 {
+    cryptify::flow_stmt!();
+    let c = a + b;
+    c
+}
+
+fn helloooo(){
+    println!("hi");
+}
+
+```
+#Output
+```rs
+use cryptify;
+mod word_counter;
+use std::env;
+use std::fs;
+use word_counter::count_words;
+fn main() {
+    cryptify::flow_stmt!();
+    let b = cryptify::encrypt_string!("Hello World");
+    println!("{}", b);
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        eprintln!("Usage: {} <filename>", args[0]);
+        return;
+    }
+    let filename = &args[1];
+    let content = fs::read_to_string(filename).expect("Could not read file");
+    let word_counts = count_words(&content);
+    for (word, count) in word_counts.iter() {
+        println!("{}: {}", word, count);
+    }
+}
+fn dummy() {
+    cryptify::flow_stmt!();
+    let a = 1;
+    let b = 2;
+    let c = a + b;
+    println!("{}", c);
+}
+fn calc_sum(a: i32, b: i32) -> i32 {
+    cryptify::flow_stmt!();
+    let c = a + b;
+    c
+}
+fn helloooo() {
+    println!("hi");
+}
+```
 # License
 rust-obfuscator is licensed under the MIT License - see the [LICENSE](https://github.com/dronavallipranav/rust-obfuscator/blob/main/LICENSE) file for details.
