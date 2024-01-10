@@ -10,7 +10,11 @@
 
 ## Features
 
-- **String Encryption**: Encrypts string literals in your code at compile time.
+- **String Encryption**: Automatically encrypts string literals assigned to local variables at compile time.
+    - Can also be used for formatted strings, but currently requires manual placement
+    ```rs
+        println!("{}", cryptify::encrypt_string!("hello!"));
+    ```
 - **Control Flow Obfuscation**: Introduces compile-dummy dummy loops and random variables.
 - Note: for truly random control flow and variables, you can disable the insertion of the flow_macro using the **disable_macro** flag, but this will directly affect the source code.
 - **Customizable Obfuscation**: Offers flexibility to enable or disable specific obfuscation features based on your requirements.
@@ -22,7 +26,7 @@ Add `cryptify` to your `Cargo.toml` as a dependency:
 
 ```toml
 [dependencies]
-cryptify = "1.0.0"
+cryptify = "3.0.8"
 ```
 
 To install `rust-obfuscator`, clone the repository and build the tool using Cargo from the root:

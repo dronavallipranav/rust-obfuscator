@@ -66,16 +66,16 @@ dependencies = [
 
 [[package]]
 name = "cryptify"
-version = "3.0.4"
+version = "3.0.8"
 dependencies = [
  "labyrinth_macros 2.0.0",
 ]
 
 [[package]]
 name = "cryptify"
-version = "3.0.4"
+version = "3.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b6425aa5e7cb5b5254a68905755a2c974094bbc7859155cd9b281f1db346c56"
+checksum = "5d7875a5ccecb7451ad5542c0394e5fd7507c2be0ed2b88cbe96a35809f6f26b"
 dependencies = [
  "labyrinth_macros 2.0.0",
 ]
@@ -244,7 +244,7 @@ name = "rust-obfuscator"
 version = "1.0.0"
 dependencies = [
  "clap",
- "cryptify 3.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cryptify 3.0.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2",
  "quote",
  "rand",
