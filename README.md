@@ -63,7 +63,7 @@ rust-obfuscator path/to/your_project --no_flow
 ```
 (disables flow obfuscation)
 
-#Input
+# Input
 -running the tool with no config
 ```rs
 use cryptify;
@@ -105,7 +105,7 @@ fn helloooo(){
 }
 
 ```
-#Output
+# Output
 ```rs
 use cryptify;
 mod word_counter;
