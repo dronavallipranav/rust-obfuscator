@@ -27,6 +27,7 @@ use cryptify;
 fn main(){
     let decrypted = cryptify::encrypt_string("Hello, World!");
     println!(decrypted);
+    println!("{}", cryptify::encrypt_string!("formatted!"));
 }
 ```
 
@@ -35,6 +36,7 @@ Set the **CRYPTIFY_KEY** environment variable for custom encryption otherwise it
 ## Output
 ```
 Hello World!
+formatted!
 ```
 ## Example of expanded Flow_Stmt!
 
