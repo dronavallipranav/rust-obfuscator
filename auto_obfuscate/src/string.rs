@@ -7,7 +7,6 @@ use syn::{
     Expr,
     LitStr,
     Lit,
-    Macro,
     File,
 };
 use quote::quote;
@@ -47,6 +46,7 @@ impl StringObfuscator {
             strings_to_encrypt: 0,
         }
     }
+    #[allow(dead_code)]
     fn process_macro_tokens(&self, tokens: TokenStream) -> TokenStream {
         tokens
             .into_iter()
@@ -121,22 +121,6 @@ impl VisitMut for StringObfuscator {
         }
 
         syn::visit_mut::visit_expr_mut(self, expr);
-    }
-    fn visit_macro_mut(&mut self, mac: &mut Macro) {
-        if self.enabled == false {
-            return;
-        }
-        //check to see if macro is not obfuscation macro
-        if
-            mac.path.segments.len() == 2 &&
-            mac.path.segments[0].ident == "cryptify" &&
-            mac.path.segments[1].ident == "encrypt_string"
-        {
-            return;
-        }
-        //encrypt string literal within macro
-        let new_tokens = self.process_macro_tokens(mac.tokens.clone());
-        mac.tokens = new_tokens;
     }
 }
 
