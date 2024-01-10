@@ -1,6 +1,5 @@
 //re-export proc macro crate
 pub use labyrinth_macros::*;
-use std::borrow::Cow;
 
 /// A helper decryption function meant to decrypt encrypted strings at runtime
 ///
