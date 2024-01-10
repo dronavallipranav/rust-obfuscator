@@ -77,7 +77,7 @@ pub fn encrypt_string(input: TokenStream) -> TokenStream {
     let encrypted_string = xor_cipher(&string, &key);
 
     let output = quote! {
-        cryptify::decrypt_string(#encrypted_string)
+        cryptify::decrypt_string(#encrypted_string).as_ref()
     };
 
     TokenStream::from(output)
