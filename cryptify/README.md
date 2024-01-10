@@ -9,15 +9,6 @@
 - **String Obfuscation**: Automatically encrypts string literals in your code at compile time, making them harder to read and understand.
 - **Flow Obfuscation**: Introduces dummy loops and random variables into control flows, enhancing the overall obfuscation of the logic.
 
-# Installation
-
-Add `cryptify` to your `Cargo.toml` as a dependency:
-
-```toml
-[dependencies]
-cryptify = "1.0.0"
-```
-
 # Usage
 
 ## Bring macro into scope
