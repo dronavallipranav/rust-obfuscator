@@ -29,7 +29,7 @@ fn main(){
 }
 ```
 
-Set the **CRYPTIFY_KEY** environment variable for custom encryption defaults to fixed key
+Set the **CRYPTIFY_KEY** environment variable for custom encryption otherwise it defaults to defined fixed key
 
 ## Output
 ```
