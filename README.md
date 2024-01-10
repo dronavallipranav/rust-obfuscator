@@ -39,11 +39,12 @@ cp ./target/release/rust-obfuscator .
 ```
 
 # Usage
-The binary can be used on either a file or a directory. If provided with a directory it will only modify rust source files within that directory not any subdirectories
+Set the **CRYPTIFY_KEY** environment variable for custom encryption otherwise it defaults to defined fixed key
 - Add to source code you'd like to modify
 ```rs
 use cryptify;
 ```
+The binary can be used on either a file or a directory. If provided with a directory it will only modify rust source files within that directory not any subdirectories
 ```sh
 ./rust-obfuscator path/to/your_project <Options>
 ```
