@@ -3,7 +3,7 @@
 `rust-obfuscator` is a set of tools designed to automatically obfuscate Rust source code by automatically inserting procedural macros or by (optionally) providing the obfuscation in the source code directly. For more fine-grained obfuscation a procedural macro library [cryptify](https://crates.io/crates/cryptify) is also provided.
 
 ## Currently Supported
-1. String literal encryption
+1. string literal encryption
 2. control-flow obfuscation
 3. control-flow obfuscation (source code)
 4. variable renaming (source code)
