@@ -2,12 +2,14 @@ use syn::{
     visit_mut::VisitMut,
     visit::Visit,
     parse_file,
-    parse2,
     parse_str,
     Expr,
+    ExprLit,
     LitStr,
     Lit,
     File,
+    Local,
+    parse_quote,
 };
 use quote::quote;
 use proc_macro2::{ TokenStream, TokenTree };
@@ -100,27 +102,17 @@ impl StringObfuscator {
 
 impl VisitMut for StringObfuscator {
     //replace all string literals with call to obfuscation macro
-    fn visit_expr_mut(&mut self, expr: &mut Expr) {
-        if
-            !self.enabled ||
-            (self.encrypted_count >= self.strings_to_encrypt && self.percentage != 100)
-        {
-            return;
-        }
-        if let Expr::Lit(expr_lit) = expr {
-            if let Lit::Str(_) = &expr_lit.lit {
-                //replace string literal with macro call
-                let macro_call =
-                    quote! {
-                    cryptify::encrypt_string!(#expr_lit)
-                };
-                self.encrypted_count += 1;
-                //replace expression to use macro call
-                *expr = parse2(macro_call).expect("Failed to parse macro call");
+    fn visit_local_mut(&mut self, local: &mut Local) {
+        if let Some(local_init) = &mut local.init {
+            //match on local variables that contain string literal assignments
+            if let Expr::Lit(ExprLit { lit: Lit::Str(lit_str), .. }) = &*local_init.expr {
+                let encrypted = quote! { cryptify::encrypt_string!(#lit_str) };
+                let new_expr: Expr = parse_quote!(#encrypted);
+                *local_init.expr = *Box::new(new_expr);
             }
         }
 
-        syn::visit_mut::visit_expr_mut(self, expr);
+        syn::visit_mut::visit_local_mut(self, local);
     }
 }
 
