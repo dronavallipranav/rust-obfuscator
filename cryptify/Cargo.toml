@@ -1,6 +1,6 @@
 [package]
 name = "cryptify"
-version = "3.0.8"
+version = "3.1.0"
 edition = "2021"
 authors = ["Pranav Dronavalli <dronavallipranav@gmail.com>"]
 description = "A procedural macro library to obfuscate Rust code. Provides compile-time string encryption and random flow obfuscation."
