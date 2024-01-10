@@ -107,11 +107,6 @@ fn helloooo(){
 ```
 # Output
 ```rs
-use cryptify;
-mod word_counter;
-use std::env;
-use std::fs;
-use word_counter::count_words;
 fn main() {
     cryptify::flow_stmt!();
     let b = cryptify::encrypt_string!("Hello World");
@@ -142,6 +137,100 @@ fn calc_sum(a: i32, b: i32) -> i32 {
 }
 fn helloooo() {
     println!("hi");
+}
+```
+## Expanded Output
+```rs
+fn main() {
+    {
+        let _is_dummy_145 = true;
+        let _dummy_upper_bound = 100;
+        let _random_dummy_var = 1;
+        let mut _dummy_counter = 6i32;
+        let _dummy_increment = 2i32;
+        loop {
+            if _dummy_counter > _dummy_upper_bound {
+                break;
+            }
+            unsafe {
+                std::ptr::write_volatile(
+                    &mut _dummy_counter,
+                    _dummy_counter + _dummy_increment,
+                );
+            }
+        }
+    };
+    let b = cryptify::decrypt_string("0\u{b}\r\u{1f}\tFd\u{18}\u{11}\t\0");
+    {
+        ::std::io::_print(format_args!("{0}\n", b));
+    };
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        {
+            ::std::io::_eprint(format_args!("Usage: {0} <filename>\n", args[0]));
+        };
+        return;
+    }
+    let filename = &args[1];
+    let content = fs::read_to_string(filename).expect("Could not read file");
+    let word_counts = count_words(&content);
+    for (word, count) in word_counts.iter() {
+        {
+            ::std::io::_print(format_args!("{0}: {1}\n", word, count));
+        };
+    }
+}
+fn dummy() {
+    {
+        let _is_dummy_145 = true;
+        let mut _dummy_counter = 4i32;
+        let _dummy_upper_bound = 100;
+        let _dummy_increment = 3i32;
+        loop {
+            if _dummy_counter > _dummy_upper_bound {
+                break;
+            }
+            unsafe {
+                std::ptr::write_volatile(
+                    &mut _dummy_counter,
+                    _dummy_counter + _dummy_increment,
+                );
+            }
+        }
+    };
+    let a = 1;
+    let b = 2;
+    let c = a + b;
+    {
+        ::std::io::_print(format_args!("{0}\n", c));
+    };
+}
+fn calc_sum(a: i32, b: i32) -> i32 {
+    {
+        let _is_dummy_145 = true;
+        let mut _dummy_counter = 8i32;
+        let _dummy_increment = 3i32;
+        let _extra_dummy_var = 4i32;
+        let _dummy_upper_bound = 100;
+        loop {
+            if _dummy_counter > _dummy_upper_bound {
+                break;
+            }
+            unsafe {
+                std::ptr::write_volatile(
+                    &mut _dummy_counter,
+                    _dummy_counter + _dummy_increment,
+                );
+            }
+        }
+    };
+    let c = a + b;
+    c
+}
+fn helloooo() {
+    {
+        ::std::io::_print(format_args!("hi\n"));
+    };
 }
 ```
 # License
