@@ -27,8 +27,7 @@ fn main() {
                 .long("disable_macro")
                 .help("disable macro and modify source directly for flow obfuscation")
         )
-        .arg(Arg::with_name("var").long("var").help("Enable variable renaming"))
-        .arg(Arg::with_name("p").long("p").help("set upper bound for string literal encryption"))
+        .arg(Arg::with_name("var").long("var").help("Enable variable renaming")) 
         .get_matches();
 
     let path = matches.value_of("path").unwrap();
