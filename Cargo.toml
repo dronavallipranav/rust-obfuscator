@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "auto_obfuscate",
-    "labyrinth",
+    "cryptify",
     "labyrinth_macros",
 ]
+default-members = ["auto_obfuscate"]
 resolver = "2"

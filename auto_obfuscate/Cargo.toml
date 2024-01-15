@@ -1,9 +1,11 @@
 [package]
 name = "rust-obfuscator"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "rust-obfuscator"
+path = "src/main.rs" 
 
 [dependencies]
 syn = { version = "2.0", features = ["full", "visit-mut", "visit"] }
@@ -12,4 +14,4 @@ proc-macro2 = "1.0"
 rand = "0.8.0"
 regex = "1.5.4"
 clap = "3.0"
-labyrinth = { path = "../labyrinth" }
+cryptify = "3.1.0"

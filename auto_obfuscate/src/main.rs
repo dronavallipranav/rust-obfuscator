@@ -10,9 +10,9 @@ use std::fs;
 fn main() {
     //default config
     let mut config = Config::default();
-    let matches = App::new("Rust Obfuscator")
+    let matches = App::new("Rust Automatic Obfuscator")
         .version("1.0")
-        .author("Your Name")
+        .author("Pranav Dronavalli")
         .about("Obfuscates Rust source code")
         .arg(
             Arg::with_name("path")
