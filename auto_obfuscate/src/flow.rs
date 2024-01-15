@@ -113,7 +113,7 @@ impl VisitMut for FlowObfuscator {
         //if use macro enabled, use macro to expand to dummy loop
         if self.use_macro {
             let macro_call = syn::parse_quote! {
-                labyrinth::flow_stmt!();
+                cryptify::flow_stmt!();
             };
             block.stmts.insert(0, macro_call);
         } else {

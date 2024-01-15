@@ -2,13 +2,14 @@ use syn::{
     visit_mut::VisitMut,
     visit::Visit,
     parse_file,
-    parse2,
     parse_str,
     Expr,
+    ExprLit,
     LitStr,
     Lit,
-    Macro,
     File,
+    Local,
+    parse_quote,
 };
 use quote::quote;
 use proc_macro2::{ TokenStream, TokenTree };
@@ -47,6 +48,7 @@ impl StringObfuscator {
             strings_to_encrypt: 0,
         }
     }
+    #[allow(dead_code)]
     fn process_macro_tokens(&self, tokens: TokenStream) -> TokenStream {
         tokens
             .into_iter()
@@ -61,7 +63,7 @@ impl StringObfuscator {
                             if let Ok(lit_str) = parse_str::<LitStr>(&lit_str) {
                                 let macro_call: TokenStream =
                                     quote! {
-                        labyrinth::encrypt_string!(#lit_str)
+                        cryptify::encrypt_string!(#lit_str)
                     };
                                 return macro_call;
                             }
@@ -103,43 +105,17 @@ impl StringObfuscator {
 
 impl VisitMut for StringObfuscator {
     //replace all string literals with call to obfuscation macro
-    fn visit_expr_mut(&mut self, expr: &mut Expr) {
-        if
-            !self.enabled ||
-            (self.encrypted_count >= self.strings_to_encrypt && self.percentage != 100)
-        {
-            return;
-        }
-        if let Expr::Lit(expr_lit) = expr {
-            if let Lit::Str(_) = &expr_lit.lit {
-                //replace string literal with macro call
-                let macro_call =
-                    quote! {
-                    labyrinth::encrypt_string!(#expr_lit)
-                };
-                self.encrypted_count += 1;
-                //replace expression to use macro call
-                *expr = parse2(macro_call).expect("Failed to parse macro call");
+    fn visit_local_mut(&mut self, local: &mut Local) {
+        if let Some(local_init) = &mut local.init {
+            //match on local variables that contain string literal assignments
+            if let Expr::Lit(ExprLit { lit: Lit::Str(lit_str), .. }) = &*local_init.expr {
+                let encrypted = quote! { cryptify::encrypt_string!(#lit_str) };
+                let new_expr: Expr = parse_quote!(#encrypted);
+                *local_init.expr = *Box::new(new_expr);
             }
         }
 
-        syn::visit_mut::visit_expr_mut(self, expr);
-    }
-    fn visit_macro_mut(&mut self, mac: &mut Macro) {
-        if self.enabled == false {
-            return;
-        }
-        //check to see if macro is not obfuscation macro
-        if
-            mac.path.segments.len() == 2 &&
-            mac.path.segments[0].ident == "labyrinth" &&
-            mac.path.segments[1].ident == "encrypt_string"
-        {
-            return;
-        }
-        //encrypt string literal within macro
-        let new_tokens = self.process_macro_tokens(mac.tokens.clone());
-        mac.tokens = new_tokens;
+        syn::visit_mut::visit_local_mut(self, local);
     }
 }
 

@@ -1,3 +1,7 @@
+//! `labyrinth_macros` crate provides procedural macros for compile-time obfuscation. NOT MEANT TO BE USED STANDALONE.
+//!
+//! This crate includes macros like `encrypt_string` and `flow_stmt` which are used
+//! to enhance the security of Rust code by obfuscating strings and control flows.
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::*;
@@ -5,6 +9,11 @@ use std::env;
 use rand::Rng;
 use rand::seq::SliceRandom;
 
+/// A procedural macro that adds a compile-time randomly generated loop and variables.
+///
+/// # Note
+/// The unsafe operation is meant to help the dummy loop survive compiler optimizations. only writes to dummy variable
+///
 #[proc_macro]
 pub fn flow_stmt(_: TokenStream) -> TokenStream {
     let mut rng = rand::thread_rng();
@@ -52,19 +61,23 @@ pub fn flow_stmt(_: TokenStream) -> TokenStream {
 
     TokenStream::from(generated_loop)
 }
-
+/// A procedural macro that encrypts a string literal at compile time.
+///
+/// # Parameters
+/// - `input`: The string literal to be encrypted.
+///
 #[proc_macro]
 pub fn encrypt_string(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as LitStr);
     let string = input.value();
 
     //set key to seeded env key or default
-    let key = env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
+    let key = env::var("CRYPTIFY_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
 
     let encrypted_string = xor_cipher(&string, &key);
 
     let output = quote! {
-        labyrinth::decrypt_string(#encrypted_string)
+        cryptify::decrypt_string(#encrypted_string).as_ref()
     };
 
     TokenStream::from(output)
@@ -81,7 +94,7 @@ fn xor_cipher(input: &str, key: &str) -> String {
 //for self-contained tests
 #[allow(dead_code)]
 fn decrypt_string(encrypted: &str) -> String {
-    let key = std::env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
+    let key = std::env::var("CRYPTIFY_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
     encrypted
         .chars()
         .zip(key.chars().cycle())
@@ -89,6 +102,7 @@ fn decrypt_string(encrypted: &str) -> String {
         .collect()
 }
 
+//unit tests testing decryption logic
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -107,9 +121,9 @@ mod tests {
     #[test]
     fn test_xor_cipher_and_decrypt_customkey() {
         //set key
-        std::env::set_var("LABYRINTH_KEY", "testkey");
+        std::env::set_var("CRYPTIFY_KEY", "testkey");
         //test loc from encrypt_string meant to extract key
-        let key = env::var("LABYRINTH_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
+        let key = env::var("CRYPTIFY_KEY").unwrap_or_else(|_| "xnasff3wcedj".to_string());
         assert_eq!(key, "testkey");
 
         let test_strings = ["Hello", "World", "1234", "!@#$%^&*()"];
