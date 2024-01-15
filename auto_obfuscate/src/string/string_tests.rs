@@ -40,7 +40,16 @@ fn test_percentage() {
     let code =
         r#"
     fn main() {
-        let a = "d";
+        let a = "a";
+        let b = "b";
+        let c = "c";
+        let d = "d";
+        let e = "e";
+        let f = "f";
+        let g = "g";
+        let h = "h";
+        let i = "i";
+        let j = "j";
         println!("Hello");
         println!("Hello");
         println!("Hello");
@@ -55,7 +64,8 @@ fn test_percentage() {
     let mut string_obfuscator = StringObfuscator::new(string_config);
     let obfuscated_code = string_obfuscator.obfuscate_strings(code);
     assert_ne!(code, obfuscated_code);
-    assert!(obfuscated_code.contains("encrypt_string"));
+    assert!(obfuscated_code.contains("encrypt_string ! (\"h\")"));
+    assert!(obfuscated_code.contains("let i = \"i\""));
     println!("{}", obfuscated_code);
 
     let parse_result = syn::parse_file(&obfuscated_code);
