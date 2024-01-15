@@ -28,7 +28,11 @@ fn main() {
                 .help("disable macro and modify source directly for flow obfuscation")
         )
         .arg(Arg::with_name("var").long("var").help("Enable variable renaming"))
-        .arg(Arg::with_name("p").long("p").help("set upper bound for string literal encryption"))
+        .arg(Arg::with_name("p")
+                 .short('p')
+                 .long("percent_strings_to_encrypt")
+                 .help("set upper bound for string literal encryption")
+                 .value_name("PERCENTAGE"))
         .get_matches();
 
     let path = matches.value_of("path").unwrap();
@@ -53,7 +57,14 @@ fn main() {
     }
     //set upper bound for string literal encryption
     if let Some(percentage) = matches.value_of("p") {
-        config.string_config.percentage = percentage.parse().unwrap_or(100);
+        config.string_config.percentage = match percentage.parse() {
+            Ok(n) if n <= 100 => n,
+            _ => {
+                eprintln!("-p: expected integer between 0 and 100, got: `{}`", percentage);
+                eprintln!("defaulting to 100%");
+                100
+            }
+        };
     }
 
     process_path(&path, &config);
