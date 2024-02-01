@@ -37,6 +37,7 @@ pub struct StringObfuscator {
     percentage: u8,
     encrypted_count: usize,
     strings_to_encrypt: usize,
+    num_strings_encrypted: usize,
 }
 
 impl StringObfuscator {
@@ -46,6 +47,7 @@ impl StringObfuscator {
             percentage: config.percentage,
             encrypted_count: 0,
             strings_to_encrypt: 0,
+            num_strings_encrypted: 0,
         }
     }
     #[allow(dead_code)]
@@ -104,6 +106,12 @@ impl VisitMut for StringObfuscator {
     //replace all string literals with call to obfuscation macro
     fn visit_local_mut(&mut self, local: &mut Local) {
         if let Some(local_init) = &mut local.init {
+            if self.num_strings_encrypted >= self.strings_to_encrypt {
+                return;
+            }
+            self.num_strings_encrypted += 1;
+
+
             //match on local variables that contain string literal assignments
             if let Expr::Lit(ExprLit { lit: Lit::Str(lit_str), .. }) = &*local_init.expr {
                 let encrypted = quote! { cryptify::encrypt_string!(#lit_str) };
