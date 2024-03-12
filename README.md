@@ -25,7 +25,7 @@ Add `cryptify` to your `Cargo.toml` as a dependency:
 
 ```toml
 [dependencies]
-cryptify = "3.1.0"
+cryptify = "3.1.1"
 ```
 
 To install `rust-obfuscator`, clone the repository and build the tool using Cargo from the root:
