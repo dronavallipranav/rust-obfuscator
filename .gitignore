@@ -2,3 +2,4 @@
 **/Cargo.lock
 **/target/
 obfuscated_code/
+rust-obfuscator

@@ -123,6 +123,17 @@ impl VisitMut for VariableRenamer {
                 i.sig.ident = Ident::new(&new_name, i.sig.ident.span());
             }
         }
+        //rename function arguments
+        for input in &mut i.sig.inputs {
+            if let syn::FnArg::Typed(pat_type) = input {
+                if let syn::Pat::Ident(pat_ident) = &mut *pat_type.pat {
+                    let old_param = pat_ident.ident.to_string();
+                    let new_param = random_name();
+                    self.renamed_vars.insert(old_param.clone(), new_param.clone());
+                    pat_ident.ident = Ident::new(&new_param, pat_ident.ident.span());
+                }
+            }
+        }
 
         let len = i.block.stmts.len();
         for (index, stmt) in i.block.stmts.iter_mut().enumerate() {
