@@ -17,7 +17,8 @@
     ```
 - **Control Flow Obfuscation**: Introduces compile-dummy dummy loops and random variables.
 - **Customizable Obfuscation**: Offers flexibility to enable or disable specific obfuscation features based on your requirements.
-- **Variable Renaming**: Obfuscation of the source code directly, if you'd like to ship the code or just want to make your code look worse.
+- **Variable Renaming**: Obfuscation of the source code directly, if you'd like to ship the code or just want to make your code look worse. 
+- NOTE: var renaming not fully functional as of 1.1.1 working on full-support as some cases aren't covered yet. Can still use the tool and fix the appropiate compiler errors.
 
 ## Installation
 
