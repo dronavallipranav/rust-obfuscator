@@ -16,7 +16,7 @@
 use cryptify;
 
 fn main(){
-    let decrypted = cryptify::encrypt_string("Hello, World!");
+    let decrypted = cryptify::encrypt_string!("Hello, World!");
     println!(decrypted);
     println!("{}", cryptify::encrypt_string!("formatted!"));
 }
