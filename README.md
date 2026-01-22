@@ -26,7 +26,7 @@ Add `cryptify` to your `Cargo.toml` as a dependency:
 
 ```toml
 [dependencies]
-cryptify = "3.1.1"
+cryptify = "3.2.1"
 ```
 
 To install `rust-obfuscator`, clone the repository and build the tool using Cargo from the root:
@@ -144,41 +144,34 @@ fn helloooo() {
 fn main() {
     {
         let _is_dummy_145 = true;
-        let _dummy_upper_bound = 100;
-        let _random_dummy_var = 1;
-        let mut _dummy_counter = 6i32;
-        let _dummy_increment = 2i32;
+        let mut _dummy_counter = std::hint::black_box(4i32 as i32);
+        let _dummy_increment = std::hint::black_box(1i32 as i32);
+        let _dummy_upper_bound = std::hint::black_box(53i32 as i32);
         loop {
-            if _dummy_counter > _dummy_upper_bound {
+            if std::hint::black_box(_dummy_counter)
+                > std::hint::black_box(_dummy_upper_bound)
+            {
                 break;
             }
-            unsafe {
-                std::ptr::write_volatile(
-                    &mut _dummy_counter,
-                    _dummy_counter + _dummy_increment,
+            _dummy_counter = std::hint::black_box(
+                std::hint::black_box(_dummy_counter)
+                    + std::hint::black_box(_dummy_increment),
+            );
+        }
+    };
+    match (&1, &1) {
+        (left_val, right_val) => {
+            if !(*left_val == *right_val) {
+                let kind = ::core::panicking::AssertKind::Eq;
+                ::core::panicking::assert_failed(
+                    kind,
+                    &*left_val,
+                    &*right_val,
+                    ::core::option::Option::None,
                 );
             }
         }
     };
-    let b = cryptify::decrypt_string("0\u{b}\r\u{1f}\tFd\u{18}\u{11}\t\0");
-    {
-        ::std::io::_print(format_args!("{0}\n", b));
-    };
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
-        {
-            ::std::io::_eprint(format_args!("Usage: {0} <filename>\n", args[0]));
-        };
-        return;
-    }
-    let filename = &args[1];
-    let content = fs::read_to_string(filename).expect("Could not read file");
-    let word_counts = count_words(&content);
-    for (word, count) in word_counts.iter() {
-        {
-            ::std::io::_print(format_args!("{0}: {1}\n", word, count));
-        };
-    }
 }
 fn dummy() {
     {
