@@ -32,22 +32,22 @@ formatted!
 ## Example of expanded Flow_Stmt!
 
 ```rs
+{
     {
         let _is_dummy_145 = true;
-        let _dummy_upper_bound = 100;
-        let _dummy_increment = 1i32;
-        let mut _dummy_counter = 10i32;
-        let _extra_dummy_var = 2i32;
+        let mut _dummy_counter = std::hint::black_box(4i32 as i32);
+        let _dummy_increment = std::hint::black_box(1i32 as i32);
+        let _dummy_upper_bound = std::hint::black_box(53i32 as i32);
         loop {
-            if _dummy_counter > _dummy_upper_bound {
+            if std::hint::black_box(_dummy_counter)
+                > std::hint::black_box(_dummy_upper_bound)
+            {
                 break;
             }
-            unsafe {
-                std::ptr::write_volatile(
-                    &mut _dummy_counter,
-                    _dummy_counter + _dummy_increment,
-                );
-            }
+            _dummy_counter = std::hint::black_box(
+                std::hint::black_box(_dummy_counter)
+                    + std::hint::black_box(_dummy_increment),
+            );
         }
     };
     match (&1, &1) {
@@ -63,6 +63,7 @@ formatted!
             }
         }
     };
+}
 
 ```
 
