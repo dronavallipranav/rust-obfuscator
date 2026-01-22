@@ -75,9 +75,9 @@ dependencies = [
 
 [[package]]
 name = "cryptify"
-version = "3.2.0"
+version = "3.2.1"
 dependencies = [
- "labyrinth_macros 3.0.0",
+ "labyrinth_macros 3.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -130,9 +130,7 @@ dependencies = [
 
 [[package]]
 name = "labyrinth_macros"
-version = "3.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1e5de7c75a68b57f29d2966c4b6ca16ca631a71719902a23a1d517d25236675"
+version = "3.0.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -142,7 +140,9 @@ dependencies = [
 
 [[package]]
 name = "labyrinth_macros"
-version = "3.0.1"
+version = "3.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "108484a425d5e622b63194be3fb8fbf88823271912d8b63cc12917be292329b2"
 dependencies = [
  "proc-macro2",
  "quote",
