@@ -83,14 +83,12 @@ impl FlowObfuscator {
         //randomize the order of variable assignments
         statements.shuffle(&mut rng);
 
-        // Empty inline asm acts as full optimization barrier - LLVM cannot reason past it
         let loop_block = quote! {
             loop {
-                unsafe { std::arch::asm!("", options(nostack)); }
-                if _dummy_counter > _dummy_upper_bound {
+                if std::hint::black_box(_dummy_counter) > std::hint::black_box(_dummy_upper_bound) {
                     break;
                 }
-                _dummy_counter = _dummy_counter + _dummy_increment;
+                _dummy_counter = std::hint::black_box(std::hint::black_box(_dummy_counter) + std::hint::black_box(_dummy_increment));
             }
         };
 
