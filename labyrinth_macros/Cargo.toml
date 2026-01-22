@@ -1,6 +1,6 @@
 [package]
 name = "labyrinth_macros"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2021"
 authors = ["Pranav Dronavalli <dronavallipranav@gmail.com>"]
 description = "A procedural macro crate for the cryptify crate meant to provide obfuscation through compile time string encryption. not meant to be used standalone"
