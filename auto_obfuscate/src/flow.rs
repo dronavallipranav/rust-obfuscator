@@ -1,7 +1,7 @@
-use syn::{ visit_mut::VisitMut, Block, Stmt, parse_file, Expr, Pat, PatIdent, parse_quote };
 use quote::quote;
-use rand::{ Rng, thread_rng };
 use rand::seq::SliceRandom;
+use rand::{thread_rng, Rng};
+use syn::{parse_file, parse_quote, visit_mut::VisitMut, Block, Expr, Pat, PatIdent, Stmt};
 
 #[cfg(test)]
 mod flow_tests;
@@ -63,43 +63,44 @@ impl FlowObfuscator {
 
         let initial_value = rng.gen_range(1..=10);
         let increment_value = rng.gen_range(1..=5);
+        let upper_bound = rng.gen_range(50..=100);
         let add_extra_dummy_variable = rng.gen_bool(0.5);
 
         let mut statements = vec![
-            quote! { let mut _dummy_counter = #initial_value; },
-            quote! { let _dummy_increment = #increment_value; },
-            quote! { let _dummy_upper_bound = 100; }
+            quote! { let mut _dummy_counter = std::hint::black_box(#initial_value as i32); },
+            quote! { let _dummy_increment = std::hint::black_box(#increment_value as i32); },
+            quote! { let _dummy_upper_bound = std::hint::black_box(#upper_bound as i32); },
         ];
 
         //add extra dummy variable occasionally
         if add_extra_dummy_variable {
             let extra_dummy_value = rng.gen_range(1..=10);
-            statements.push(quote! { let _extra_dummy_var = #extra_dummy_value; });
+            statements.push(
+                quote! { let _extra_dummy_var = std::hint::black_box(#extra_dummy_value as i32); },
+            );
         }
 
         //randomize the order of variable assignments
         statements.shuffle(&mut rng);
 
-        let loop_block =
-            quote! {
-        loop {
-            if _dummy_counter > _dummy_upper_bound{
-                break;
+        // Empty inline asm acts as full optimization barrier - LLVM cannot reason past it
+        let loop_block = quote! {
+            loop {
+                unsafe { std::arch::asm!("", options(nostack)); }
+                if _dummy_counter > _dummy_upper_bound {
+                    break;
+                }
+                _dummy_counter = _dummy_counter + _dummy_increment;
             }
-            //prevent compiler optimizations
-            unsafe {
-                std::ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
-            }
-        }
-    };
+        };
 
         parse_quote! {
-        {
-            let _is_dummy_145 = true;
-            #(#statements)*
-            #loop_block
+            {
+                let _is_dummy_145 = true;
+                #(#statements)*
+                #loop_block
+            }
         }
-    }
     }
 }
 

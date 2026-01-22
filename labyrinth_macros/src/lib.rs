@@ -4,10 +4,10 @@
 //! to enhance the security of Rust code by obfuscating strings and control flows.
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::*;
-use std::env;
-use rand::Rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
+use std::env;
+use syn::*;
 
 /// A procedural macro that adds a compile-time randomly generated loop and variables.
 ///
@@ -20,38 +20,38 @@ pub fn flow_stmt(_: TokenStream) -> TokenStream {
 
     let initial_value = rng.gen_range(1..=10);
     let increment_value = rng.gen_range(1..=4);
+    let upper_bound = rng.gen_range(50..=100);
     let add_extra_dummy_variable = rng.gen_bool(0.5);
 
     let mut statements = vec![
-        quote! { let mut _dummy_counter = #initial_value; },
-        quote! { let _dummy_increment = #increment_value; },
-        quote! { let _dummy_upper_bound = 100; }
+        quote! { let mut _dummy_counter = std::hint::black_box(#initial_value as i32); },
+        quote! { let _dummy_increment = std::hint::black_box(#increment_value as i32); },
+        quote! { let _dummy_upper_bound = std::hint::black_box(#upper_bound as i32); },
     ];
 
     //add random dummy variable occasionally
     if add_extra_dummy_variable {
         let extra_dummy_value = rng.gen_range(1..=10);
-        statements.push(quote! { let _extra_dummy_var = #extra_dummy_value; });
+        statements.push(
+            quote! { let _extra_dummy_var = std::hint::black_box(#extra_dummy_value as i32); },
+        );
     }
 
     //randomize the order of variable assignments
     statements.shuffle(&mut rng);
 
-    let loop_block =
-        quote! {
+    let loop_block = quote! {
         loop {
-            if _dummy_counter > _dummy_upper_bound {
+            unsafe { std::arch::asm!("", options(nostack)); }
+            if std::hint::black_box(_dummy_counter) > std::hint::black_box(_dummy_upper_bound) {
                 break;
             }
-            //prevent compiler optimizations
-            unsafe {
-                std::ptr::write_volatile(&mut _dummy_counter, _dummy_counter + _dummy_increment);
-            }
+            //hide what expr evaluates to to stop compiler
+            _dummy_counter = std::hint::black_box(std::hint::black_box(_dummy_counter) + std::hint::black_box(_dummy_increment));
         }
     };
 
-    let generated_loop =
-        quote! {
+    let generated_loop = quote! {
         {
             let _is_dummy_145 = true;
             #(#statements)*
@@ -77,7 +77,7 @@ pub fn encrypt_string(input: TokenStream) -> TokenStream {
     let encrypted_string = xor_cipher(&string, &key);
 
     let output = quote! {
-        cryptify::decrypt_string(#encrypted_string).as_ref()
+        cryptify::decrypt_string(#encrypted_string)
     };
 
     TokenStream::from(output)
@@ -87,7 +87,7 @@ fn xor_cipher(input: &str, key: &str) -> String {
     input
         .chars()
         .zip(key.chars().cycle())
-        .map(|(input_char, key_char)| { ((input_char as u8) ^ (key_char as u8)) as char })
+        .map(|(input_char, key_char)| ((input_char as u8) ^ (key_char as u8)) as char)
         .collect()
 }
 
@@ -109,6 +109,7 @@ mod tests {
 
     #[test]
     fn test_xor_cipher_and_decrypt() {
+        std::env::remove_var("CRYPTIFY_KEY");
         let key = "xnasff3wcedj";
         let test_strings = ["Hello", "World", "1234", "!@#$%^&*()"];
 

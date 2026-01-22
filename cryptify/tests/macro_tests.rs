@@ -1,7 +1,7 @@
 //integration tests testing whole crate
 #[test]
 fn test_encrypt_macro() {
-    let decrypted = cryptify::encrypt_string!("Hello World");
+    let decrypted: String = cryptify::encrypt_string!("Hello World");
     assert_eq!("Hello World", decrypted);
 }
 
