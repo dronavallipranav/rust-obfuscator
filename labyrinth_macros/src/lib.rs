@@ -42,7 +42,6 @@ pub fn flow_stmt(_: TokenStream) -> TokenStream {
 
     let loop_block = quote! {
         loop {
-            unsafe { std::arch::asm!("", options(nostack)); }
             if std::hint::black_box(_dummy_counter) > std::hint::black_box(_dummy_upper_bound) {
                 break;
             }
